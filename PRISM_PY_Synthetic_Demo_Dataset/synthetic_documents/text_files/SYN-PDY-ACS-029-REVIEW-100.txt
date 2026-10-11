@@ -1,0 +1,20 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Access-Card Printer Request
+Proposal ID: SYN-PDY-ACS-029
+
+REVIEW OBSERVATIONS (FICTIONAL)
+Reviewed record: SYN-PDY-ACS-029
+
+OBSERVATIONS:
+1. Objective is understandable for a demo exercise.
+2. Budget figure INR 74,000 is illustrative only.
+3. Related demo records to check: SYN-PDY-VIS-008
+4. Unresolved risk: incomplete source notes in the first draft.
+
+RECOMMENDATION FOR THIS SCENARIO:
+Continue only as a training example. Confirm missing measurements before any real comparison.

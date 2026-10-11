@@ -1,0 +1,83 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+PROPOSAL FOR CCTV EXPANSION PROJECT
+Proposal ID: SYN-PDY-CCTV-002
+Stations: Demo North Station, Demo South Station
+Date: 2024-10-01
+
+BACKGROUND:
+Following the successful pilot at Demo Central Station, this proposal seeks to expand CCTV surveillance to two additional stations.
+
+OBJECTIVE:
+Install CCTV surveillance systems at Demo North and Demo South stations using proven specifications from the pilot project.
+
+SCOPE:
+Station 1 - Demo North Station:
+- 10 IP-based cameras
+- Network Video Recorder with 2TB storage
+- Centralized monitoring
+- 24/7 recording
+
+Station 2 - Demo South Station:
+- 10 IP-based cameras
+- Network Video Recorder with 2TB storage
+- Centralized monitoring
+- 24/7 recording
+
+TECHNICAL SPECIFICATIONS:
+(Matching pilot project specifications for consistency)
+- Camera Resolution: 1080p
+- Night Vision: IR range 30 meters
+- Network: PoE-enabled
+- Storage: H.265 compression, 30-day retention
+
+BUDGET ESTIMATE:
+Total: INR 11,00,000 (Eleven Lakh)
+
+Breakdown:
+Demo North Station: INR 5,50,000
+- Cameras (10 units): INR 1,50,000
+- NVR System: INR 90,000
+- Installation & Cabling: INR 1,60,000
+- Power Backup: INR 50,000
+- Maintenance (1 year): INR 60,000
+- Contingency (10%): INR 40,000
+
+Demo South Station: INR 5,50,000
+(Same breakdown as Demo North)
+
+JUSTIFICATION:
+1. Proven success of pilot at Demo Central
+2. Security monitoring needs at both locations
+3. Consistent technology for easier maintenance
+4. Economies of scale in procurement
+5. Centralized monitoring potential
+
+TIMELINE:
+- Procurement: 2 months
+- Station 1 Installation: 2 months
+- Station 2 Installation: 2 months (can overlap)
+- Testing & Training: 1 month
+- Total Duration: 6 months
+
+PROCUREMENT METHOD:
+Open Tender (anticipating 5+ vendors)
+
+DEPENDENCIES:
+- Budget approval for FY 2024-25
+- Network infrastructure readiness at both stations
+- Coordination with station operations
+- Vendor capacity for multi-site deployment
+
+RISKS:
+- Budget constraints may require phased implementation
+- Simultaneous deployment may strain vendor resources
+- Network upgrades may be needed at both stations
+
+RECOMMENDATIONS:
+1. Approve both stations if budget permits
+2. Consider phased deployment if budget is limited
+3. Leverage pilot project learnings
+4. Include centralized monitoring capability
+
+This is a SYNTHETIC proposal for demonstration purposes only.

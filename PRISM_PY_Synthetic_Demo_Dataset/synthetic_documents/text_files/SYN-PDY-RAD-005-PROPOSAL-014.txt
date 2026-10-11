@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Radio Handset Replacement Pilot
+Proposal ID: SYN-PDY-RAD-005
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo Central Station
+Jurisdiction: Demo Central Region (demo attribute only)
+Date: 2024-02-10
+
+OBJECTIVE:
+Replace ageing demo radio handsets at one fictional station
+
+SCOPE AND TECHNOLOGY:
+- Technology: Digital handheld radios with spare batteries
+- Quantity: 20 handsets
+- Timeline: 4 months
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 320,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: SYN-PDY-MAINT-001
+
+REVIEWER NOTE:
+Warranty and repair history should be recorded after issue.

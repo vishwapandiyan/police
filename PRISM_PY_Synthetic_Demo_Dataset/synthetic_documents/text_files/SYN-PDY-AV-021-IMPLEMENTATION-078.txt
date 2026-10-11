@@ -1,0 +1,15 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Interview Room Audio-Visual Kit
+Proposal ID: SYN-PDY-AV-021
+
+IMPLEMENTATION UPDATE (FICTIONAL)
+Implementation status: Completed
+Site: Demo Central Station
+Work described: install or issue 1 room kit using Camera, microphone, and locked storage drive.
+Issues recorded for training: scheduling delay and one warranty query.
+Repair history should be written into the linked maintenance or asset record.

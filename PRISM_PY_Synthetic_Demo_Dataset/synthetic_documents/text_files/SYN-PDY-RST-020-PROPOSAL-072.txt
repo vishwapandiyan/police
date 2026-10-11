@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Duty Roster Spreadsheet Replacement
+Proposal ID: SYN-PDY-RST-020
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo West Station
+Jurisdiction: Demo West Region (demo attribute only)
+Date: 2024-05-20
+
+OBJECTIVE:
+Trial a fictional duty roster tool for one demo station
+
+SCOPE AND TECHNOLOGY:
+- Technology: Shared roster workbook with printouts
+- Quantity: 1 workstation license (demo)
+- Timeline: 2 months
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 67,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: None recorded
+
+REVIEWER NOTE:
+Rejected because backup-print procedures were missing.

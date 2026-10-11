@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Evidence Locker Tag Pilot
+Proposal ID: SYN-PDY-RFID-011
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo North Station
+Jurisdiction: Demo North Region (demo attribute only)
+Date: 2024-06-01
+
+OBJECTIVE:
+Tag a fictional evidence locker set for location checks
+
+SCOPE AND TECHNOLOGY:
+- Technology: Passive RFID tags and handheld reader
+- Quantity: 200 tags
+- Timeline: 5 months
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 260,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: SYN-PDY-ASSET-003
+
+REVIEWER NOTE:
+Intended to feed the fictional asset register.

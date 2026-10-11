@@ -1,0 +1,14 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Evidence Locker Tag Pilot
+Proposal ID: SYN-PDY-RFID-011
+
+ILLUSTRATIVE DECISION
+Decision status: Approved
+Rationale in this fictional scenario: The fictional brief was complete enough for a demo approval.
+Related records: SYN-PDY-ASSET-003
+This decision is synthetic and has no official effect.

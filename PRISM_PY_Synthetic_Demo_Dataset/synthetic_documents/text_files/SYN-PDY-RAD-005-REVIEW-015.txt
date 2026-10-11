@@ -1,0 +1,20 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Radio Handset Replacement Pilot
+Proposal ID: SYN-PDY-RAD-005
+
+REVIEW OBSERVATIONS (FICTIONAL)
+Reviewed record: SYN-PDY-RAD-005
+
+OBSERVATIONS:
+1. Objective is understandable for a demo exercise.
+2. Budget figure INR 320,000 is illustrative only.
+3. Related demo records to check: SYN-PDY-MAINT-001
+4. Unresolved risk: incomplete source notes in the first draft.
+
+RECOMMENDATION FOR THIS SCENARIO:
+Continue only as a training example. Confirm missing measurements before any real comparison.

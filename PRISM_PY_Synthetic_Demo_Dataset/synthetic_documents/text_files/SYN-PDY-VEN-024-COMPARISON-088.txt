@@ -1,0 +1,19 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Radio Vendor Comparison Note
+Proposal ID: SYN-PDY-VEN-024
+
+PROCUREMENT COMPARISON NOTE (FICTIONAL)
+This note compares illustrative amounts only.
+Option A (demo): INR 320,000
+Option B (demo): INR 358,400
+Caveats before comparing the two CCTV or radio budgets:
+- Confirm identical scope and quantity
+- Confirm warranty and repair history
+- Confirm whether installation is included
+- Do not treat either figure as an official quote
+Related records: SYN-PDY-RAD-005

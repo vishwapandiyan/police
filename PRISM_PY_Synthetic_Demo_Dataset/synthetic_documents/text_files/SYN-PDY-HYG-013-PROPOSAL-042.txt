@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Cyber Hygiene Workshop
+Proposal ID: SYN-PDY-HYG-013
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo South Station
+Jurisdiction: Demo South Region (demo attribute only)
+Date: 2024-04-18
+
+OBJECTIVE:
+Run a fictional cyber hygiene workshop for demo staff
+
+SCOPE AND TECHNOLOGY:
+- Technology: Classroom kits and practice accounts
+- Quantity: 30 seats
+- Timeline: 6 weeks
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 95,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: SYN-PDY-TRN-004
+
+REVIEWER NOTE:
+Fictional training outcome recorded as completed.

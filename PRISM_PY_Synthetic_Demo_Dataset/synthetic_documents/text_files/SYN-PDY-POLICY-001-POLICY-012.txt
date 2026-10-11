@@ -1,0 +1,52 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+SYNTHETIC EQUIPMENT PROCUREMENT GUIDELINES
+(TRAINING REFERENCE ONLY - NOT A REAL POLICY)
+
+Document ID: SYN-PDY-POLICY-001-POLICY-012
+Effective Date: 2024-01-01 (FICTIONAL)
+
+⚠⚠⚠ WARNING ⚠⚠⚠
+THIS IS A SYNTHETIC TRAINING DOCUMENT
+NOT AN OFFICIAL GOVERNMENT POLICY OR GUIDELINE
+FOR DEMONSTRATION AND TRAINING PURPOSES ONLY
+DO NOT USE FOR ACTUAL PROCUREMENT DECISIONS
+⚠⚠⚠ WARNING ⚠⚠⚠
+
+PURPOSE:
+This synthetic guideline demonstrates how policy references might appear in a proposal system. It is entirely FICTIONAL and should never be cited as actual authority.
+
+ILLUSTRATIVE GUIDELINE STRUCTURE:
+
+1. PROCUREMENT THRESHOLDS (FICTIONAL):
+   - Below INR 1,00,000: Direct purchase
+   - INR 1,00,000 - 5,00,000: Limited tender (min 3 vendors)
+   - Above INR 5,00,000: Open tender (public advertisement)
+   
+2. TECHNICAL EVALUATION CRITERIA (ILLUSTRATIVE):
+   - Technical specifications compliance: 40 points
+   - Vendor experience: 20 points
+   - After-sales support: 15 points
+   - Price competitiveness: 25 points
+   Minimum qualifying score: 70/100
+
+3. WARRANTY REQUIREMENTS (EXAMPLE):
+   - Minimum warranty period: 1 year
+   - On-site support response time: 48 hours
+   - Replacement parts availability: 5 years
+
+4. DOCUMENTATION REQUIREMENTS (SAMPLE):
+   - Detailed technical specifications
+   - Budget breakdown
+   - Vendor quotations (minimum 3)
+   - Compliance certificates
+   - Installation plan
+
+REMINDER:
+- Real procurement must follow ACTUAL official guidelines
+- This document has NO legal authority
+- Created solely for training AI systems to recognize policy references
+- Anyone using this for real decisions will be acting incorrectly
+
+This is a SYNTHETIC policy reference for demonstration purposes only.
+NEVER cite this document as an authority for actual procurement.

@@ -1,0 +1,75 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+COST COMPARISON ANALYSIS
+Document ID: SYN-PDY-ANALYSIS-001-COMPARISON-011
+Date: 2024-11-10
+Subject: CCTV Proposals Cost Comparison
+
+PURPOSE:
+Illustrative comparison of CCTV proposals for training purposes.
+All figures are SYNTHETIC and for demonstration only.
+
+PROPOSALS COMPARED:
+1. SYN-PDY-CCTV-001: Pilot Project (Demo Central Station)
+2. SYN-PDY-CCTV-002: Expansion (Demo North & South Stations)
+
+COST COMPARISON:
+                                    Pilot       Expansion
+                                  (1 station)   (2 stations)
+-----------------------------------------------------------
+Total Cost:                       INR 4,50,000  INR 11,00,000
+Cost Per Station:                 INR 4,50,000  INR 5,50,000
+Number of Cameras:                8             20
+Cost Per Camera (incl. install):  INR 56,250    INR 55,000
+
+VARIANCE ANALYSIS:
+- Per-station cost increased by INR 1,00,000 (22%)
+- Increase due to: Higher camera count (8 → 10 per station)
+- Per-camera cost decreased slightly (economies of scale)
+
+IMPORTANT CAVEATS:
+⚠ Station layouts differ - direct cost comparison has limitations
+⚠ Network infrastructure costs not included in expansion
+⚠ Pilot included learning curve costs
+⚠ Market conditions may have changed between proposals
+⚠ Expansion assumes bulk procurement discount
+
+FACTORS TO CONSIDER BEFORE COMPARING BUDGETS:
+1. Scope Differences:
+   - Pilot: 8 cameras, proven concept
+   - Expansion: 10 cameras per station, larger coverage
+
+2. Timing:
+   - Pilot: 2024 Q1
+   - Expansion: 2024 Q4 (market prices may differ)
+
+3. Infrastructure:
+   - Pilot: Existing network adequate
+   - Expansion: May need network upgrades
+
+4. Procurement:
+   - Pilot: Limited tender (3 vendors)
+   - Expansion: Open tender (5+ vendors, potential better rates)
+
+5. Maintenance:
+   - Pilot: Single site maintenance easier
+   - Expansion: Multi-site maintenance may have efficiencies
+
+RECOMMENDATION:
+Do not rely solely on per-station cost comparison. Consider:
+- Total scope of work
+- Site-specific requirements
+- Market conditions at time of procurement
+- Economies of scale in multi-site deployment
+- Network and infrastructure readiness
+
+BENCHMARK GUIDANCE:
+For proper comparison, analysts should:
+✓ Verify site requirements match
+✓ Adjust for market price changes
+✓ Include all infrastructure costs
+✓ Consider maintenance implications
+✓ Review actual vendor quotes
+
+This is a SYNTHETIC analysis for demonstration purposes only.
+All cost figures are illustrative and NOT actual government data.

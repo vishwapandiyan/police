@@ -1,0 +1,82 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+MAINTENANCE RECORD
+Related Proposal: SYN-PDY-CCTV-001
+System: CCTV Pilot at Demo Central Station
+Record Date: 2024-09-30
+
+MAINTENANCE SCHEDULE:
+Monthly: Camera cleaning, cable inspection
+Quarterly: System health check, storage verification
+Annual: Comprehensive system audit
+
+MAINTENANCE LOG:
+
+[2024-07-15] Monthly Maintenance
+- Action: Routine camera cleaning
+- Cameras cleaned: All 8 units
+- Issues found: None
+- Time: 2 hours
+- Technician: Vendor support team
+
+[2024-08-02] Incident Repair
+- Issue: Camera 5 image quality degraded
+- Cause: Lens moisture accumulation
+- Action: Lens cleaned, housing seal checked
+- Resolution: Image quality restored
+- Warranty: Covered (no cost)
+- Time: 1 hour
+
+[2024-08-15] Monthly Maintenance
+- Action: Routine camera cleaning
+- Cameras cleaned: All 8 units
+- Issues found: None
+- Storage check: 65% utilization (normal)
+- Time: 2 hours
+
+[2024-09-15] Quarterly Health Check
+- System uptime: 99.2%
+- Storage: 70% utilization
+- Network connectivity: Stable
+- All cameras operational
+- NVR performance: Normal
+- Issues: None identified
+- Time: 3 hours
+
+[2024-09-20] Monthly Maintenance
+- Action: Routine camera cleaning
+- Cameras cleaned: All 8 units
+- Cable inspection: All secure
+- Power backup test: Passed
+- Time: 2 hours
+
+SPARE PARTS INVENTORY:
+- Spare camera: 1 unit (ready for quick replacement)
+- Power adapters: 2 units
+- Network cables (various lengths): In stock
+- Mounting brackets: 3 sets
+
+WARRANTY STATUS:
+- Warranty period: 3 months post-installation
+- Warranty start: June 01, 2024
+- Warranty end: August 31, 2024
+- Status: EXPIRED (considering maintenance contract renewal)
+
+MAINTENANCE COST (Post-Warranty):
+Estimated annual cost: INR 50,000
+- Quarterly service: INR 40,000
+- Emergency repairs: INR 10,000 (reserve)
+
+LESSONS LEARNED:
+1. Regular cleaning prevents most issues
+2. Monsoon season requires extra attention to housing seals
+3. Vendor response time acceptable during warranty period
+4. Storage capacity adequate for 30-day retention
+
+RECOMMENDATIONS:
+1. Renew maintenance contract before next monsoon
+2. Consider extended warranty for year 2
+3. Stock additional power adapters (most common failure point)
+4. Train station staff on basic troubleshooting
+
+This is a SYNTHETIC maintenance record for demonstration purposes only.

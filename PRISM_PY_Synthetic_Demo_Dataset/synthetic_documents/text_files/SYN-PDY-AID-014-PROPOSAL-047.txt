@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo First-Aid Refresher Sessions
+Proposal ID: SYN-PDY-AID-014
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo East Station
+Jurisdiction: Demo East Region (demo attribute only)
+Date: 2024-05-02
+
+OBJECTIVE:
+Schedule fictional first-aid refreshers at two demo sites
+
+SCOPE AND TECHNOLOGY:
+- Technology: Training mannequins and consumable kits
+- Quantity: 2 batches
+- Timeline: 8 weeks
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 72,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: None recorded
+
+REVIEWER NOTE:
+Outcome recorded as completed in the demo story.

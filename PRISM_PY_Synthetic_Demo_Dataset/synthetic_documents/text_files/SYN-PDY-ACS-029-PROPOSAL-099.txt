@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Access-Card Printer Request
+Proposal ID: SYN-PDY-ACS-029
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo West Station
+Jurisdiction: Demo West Region (demo attribute only)
+Date: 2024-09-10
+
+OBJECTIVE:
+Request a fictional access-card printer for demo badges
+
+SCOPE AND TECHNOLOGY:
+- Technology: Desktop PVC card printer
+- Quantity: 1 printer
+- Timeline: 2 months
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 74,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: SYN-PDY-VIS-008
+
+REVIEWER NOTE:
+Deferred until the visitor kiosk decision is recorded.

@@ -1,0 +1,14 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo IT Helpdesk Ticket Board
+Proposal ID: SYN-PDY-HLP-016
+
+OUTCOME REPORT (FICTIONAL)
+Outcome summary: Successful in the fictional scenario
+What was recorded: staff used the demo equipment and noted warranty / repair history.
+What is still missing: independent cost comparison against other years.
+Values in this file are synthetic and must not be presented as official facts.

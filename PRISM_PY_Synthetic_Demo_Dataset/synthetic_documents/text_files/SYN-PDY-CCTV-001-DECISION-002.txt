@@ -1,0 +1,33 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+APPROVAL DECISION
+Proposal ID: SYN-PDY-CCTV-001
+Decision Date: 2024-02-01
+
+DECISION: APPROVED
+
+REVIEW SUMMARY:
+The CCTV pilot proposal has been thoroughly reviewed and is approved for implementation at Demo Central Station.
+
+RATIONALE:
+1. Addresses identified security monitoring gaps
+2. Cost estimate is within approved budget range for pilot projects
+3. Technology selection is appropriate for the use case
+4. Timeline is realistic and achievable
+5. Procurement method complies with guidelines
+
+CONDITIONS:
+- Vendor must provide demonstration before final selection
+- Installation plan must be coordinated with station operations
+- Staff training must be completed before final acceptance
+- Quarterly progress reports required
+
+BUDGET APPROVED: INR 4,50,000
+
+NEXT STEPS:
+1. Issue tender documents (by Feb 10, 2024)
+2. Vendor evaluation (by Feb 28, 2024)
+3. Award contract (by Mar 10, 2024)
+4. Begin installation (by Mar 20, 2024)
+
+This is a SYNTHETIC decision record for demonstration purposes only.

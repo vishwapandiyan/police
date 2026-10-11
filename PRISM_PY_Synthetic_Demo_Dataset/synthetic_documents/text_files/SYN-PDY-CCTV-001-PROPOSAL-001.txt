@@ -1,0 +1,49 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+PROPOSAL FOR CCTV SURVEILLANCE PILOT PROJECT
+Proposal ID: SYN-PDY-CCTV-001
+Station: Demo Central Station
+Date: 2024-01-15
+
+OBJECTIVE:
+Install a pilot CCTV surveillance system at Demo Central Station to enhance security monitoring and improve incident response capabilities.
+
+SCOPE:
+- 8 IP-based cameras covering entry, exit, and critical areas
+- Network Video Recorder (NVR) with 2TB storage (30-day retention)
+- Centralized monitoring station
+- 24/7 recording capability
+
+TECHNICAL SPECIFICATIONS:
+- Camera Resolution: 1080p minimum
+- Night Vision: IR range 30 meters
+- Network: PoE-enabled for simplified cabling
+- Storage: H.265 compression for efficient space utilization
+
+BUDGET:
+Total Estimated Cost: INR 4,50,000 (Four Lakh Fifty Thousand)
+
+Breakdown:
+- Cameras (8 units @ INR 15,000): INR 1,20,000
+- NVR System: INR 80,000
+- Installation & Cabling: INR 1,20,000
+- UPS & Power Backup: INR 40,000
+- Maintenance Contract (1 year): INR 50,000
+- Contingency (10%): INR 40,000
+
+TIMELINE:
+- Procurement: 1 month
+- Installation: 2 months
+- Testing & Training: 2 weeks
+- Warranty Period: 3 months post-installation
+
+EXPECTED OUTCOMES:
+- Comprehensive visual coverage of station premises
+- Improved incident documentation
+- Enhanced deterrent effect
+- Training ground for future CCTV expansion
+
+PROCUREMENT METHOD:
+Limited Tender (3 vendors)
+
+This is a SYNTHETIC proposal for demonstration purposes only.

@@ -1,0 +1,19 @@
+{
+  "dataset_version": "2.0",
+  "generated_date": "2026-10-11T19:05:55.535053",
+  "total_proposals": 31,
+  "total_documents": 101,
+  "total_chunks": 158,
+  "total_vectors": 158,
+  "vector_dimension": 768,
+  "embedding_model": "intfloat/e5-base-v2",
+  "e5_prefixes_used": true,
+  "index_type": "IndexFlatIP",
+  "similarity_metric": "Cosine Similarity (via normalized inner product)",
+  "synthetic_label": "SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD",
+  "synthetic_only": true,
+  "production_index_untouched": true,
+  "index_path": "/Users/vishwa/Desktop/multiModel_rag/vectorstore/synthetic_demo/index.faiss",
+  "metadata_path": "/Users/vishwa/Desktop/multiModel_rag/vectorstore/synthetic_demo/index_metadata.pkl",
+  "source_dir": "/Users/vishwa/Desktop/multiModel_rag/PRISM_PY_Synthetic_Demo_Dataset/synthetic_documents/source_files"
+}

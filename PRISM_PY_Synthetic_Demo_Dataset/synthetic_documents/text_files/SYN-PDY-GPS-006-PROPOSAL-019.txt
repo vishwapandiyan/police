@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Patrol Vehicle Location Unit Trial
+Proposal ID: SYN-PDY-GPS-006
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo North Station
+Jurisdiction: Demo North Region (demo attribute only)
+Date: 2024-03-01
+
+OBJECTIVE:
+Trial vehicle location units on a fictional demo fleet
+
+SCOPE AND TECHNOLOGY:
+- Technology: GPS tracking units with control-room dashboard
+- Quantity: 8 vehicles
+- Timeline: 5 months
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 275,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: None recorded
+
+REVIEWER NOTE:
+Rejected in the demo scenario due to incomplete privacy notes.

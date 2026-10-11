@@ -1,0 +1,91 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+PROPOSAL FOR DIGITAL EVIDENCE HANDLING TRAINING PROGRAM
+Proposal ID: SYN-PDY-TRN-004
+Location: Demo District Training Center
+Date: 2024-07-01
+
+RATIONALE:
+With increasing deployment of surveillance technology (CCTV, body cameras) and digital systems, personnel need proper training in digital evidence handling to ensure evidence admissibility.
+
+TRAINING OBJECTIVES:
+1. Understand digital evidence types and sources
+2. Learn proper collection techniques
+3. Master evidence preservation methods
+4. Maintain chain of custody
+5. Prepare evidence for legal proceedings
+
+TRAINING CURRICULUM:
+Module 1: Introduction to Digital Evidence (4 hours)
+- Types of digital evidence
+- Legal framework
+- Admissibility requirements
+- Common challenges
+
+Module 2: Evidence Collection (8 hours)
+- CCTV footage extraction
+- Mobile device evidence
+- Computer forensics basics
+- Photography and documentation
+
+Module 3: Preservation & Storage (6 hours)
+- Hash verification
+- Write-blockers and forensic copies
+- Storage media handling
+- Long-term preservation
+
+Module 4: Chain of Custody (4 hours)
+- Documentation requirements
+- Custody logs
+- Evidence transfer procedures
+- Courtroom presentation
+
+Module 5: Practical Exercises (8 hours)
+- Hands-on CCTV footage extraction
+- Evidence documentation practice
+- Chain of custody simulation
+- Case study analysis
+
+Total Training Duration: 30 hours per batch
+
+TARGET PARTICIPANTS:
+- Station investigating officers
+- Technical personnel
+- Evidence custodians
+- Supervisory staff
+Total: 40 participants (2 batches of 20)
+
+TRAINER QUALIFICATIONS:
+- Certified digital forensics expert
+- Law enforcement experience
+- Legal testimony experience
+
+TRAINING MATERIALS:
+- Printed manual for each participant
+- USB drives with practice materials
+- Evidence handling kits
+- Certificate of completion
+
+BUDGET:
+Total: INR 1,80,000 (One Lakh Eighty Thousand)
+
+Breakdown:
+- Trainer Fees (2 sessions): INR 1,00,000
+- Training Materials: INR 30,000
+- Venue & Logistics: INR 20,000
+- Refreshments: INR 15,000
+- Certificates & Documentation: INR 10,000
+- Contingency: INR 5,000
+
+EXPECTED OUTCOMES:
+- 40 certified personnel
+- Improved evidence handling practices
+- Better coordination with legal teams
+- Reduced evidence admissibility challenges
+
+TIMELINE:
+- Batch 1: September 2024
+- Batch 2: October 2024
+- Duration: 5 days per batch
+
+This is a SYNTHETIC training proposal for demonstration purposes only.

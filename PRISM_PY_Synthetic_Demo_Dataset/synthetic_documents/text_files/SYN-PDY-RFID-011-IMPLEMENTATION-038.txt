@@ -1,0 +1,15 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Evidence Locker Tag Pilot
+Proposal ID: SYN-PDY-RFID-011
+
+IMPLEMENTATION UPDATE (FICTIONAL)
+Implementation status: In Progress
+Site: Demo North Station
+Work described: install or issue 200 tags using Passive RFID tags and handheld reader.
+Issues recorded for training: scheduling delay and one warranty query.
+Repair history should be written into the linked maintenance or asset record.

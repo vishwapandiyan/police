@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo Drone Awareness Briefing
+Proposal ID: SYN-PDY-DRN-015
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo West Station
+Jurisdiction: Demo West Region (demo attribute only)
+Date: 2024-07-08
+
+OBJECTIVE:
+Hold a fictional awareness briefing on drone sighting logs
+
+SCOPE AND TECHNOLOGY:
+- Technology: Briefing slides and sighting log templates
+- Quantity: 1 session series
+- Timeline: 1 month
+- Procurement type: Internal allocation (demo)
+
+ILLUSTRATIVE BUDGET:
+INR 64,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: None recorded
+
+REVIEWER NOTE:
+Deferred because no trainer availability was recorded.

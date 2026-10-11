@@ -1,0 +1,34 @@
+SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD
+
+This document is a fictional training example.
+It is not an official government record, sanction, or legal authority.
+Do not treat names, amounts, or outcomes as real facts.
+
+Demo UPS Battery Replacement Cycle
+Proposal ID: SYN-PDY-BAT-023
+
+INITIAL PROPOSAL (FICTIONAL)
+Station or site: Demo Central Station
+Jurisdiction: Demo Central Region (demo attribute only)
+Date: 2024-09-01
+
+OBJECTIVE:
+Replace fictional UPS batteries used by the CCTV NVR
+
+SCOPE AND TECHNOLOGY:
+- Technology: Sealed lead-acid UPS batteries
+- Quantity: 8 batteries
+- Timeline: 1 month
+- Procurement type: Limited Tender
+
+ILLUSTRATIVE BUDGET:
+INR 54,000
+This amount is fictional and must not be presented as an official sanction.
+
+MISSING INFORMATION TO CHECK:
+- Exact measurement notes
+- Warranty period
+- Overlap with related demo records: SYN-PDY-CCTV-001, SYN-PDY-MAINT-001
+
+REVIEWER NOTE:
+Repair history and warranty dates are in the maintenance note.
