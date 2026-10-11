@@ -9,7 +9,10 @@ import time
 import json
 import logging
 from typing import Optional, Dict, Any
-from openai import OpenAI
+try:
+    from openai import OpenAI
+except ImportError:  # optional dependency; only needed for live NVIDIA calls
+    OpenAI = None  # type: ignore[assignment]
 
 from .base import BaseLLMProvider, LLMResponse, LLMError
 from ..config import NVIDIAConfig
@@ -38,6 +41,8 @@ class NVIDIAProvider(BaseLLMProvider):
             config = get_config().nvidia
         
         self.config = config
+        if OpenAI is None:
+            raise ImportError("The 'openai' package is required for NVIDIAProvider (pip install openai)")
         self.client = OpenAI(
             base_url=self.config.base_url,
             api_key=self.config.api_key,

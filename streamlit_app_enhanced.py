@@ -1010,6 +1010,199 @@ def render_pipeline_demo_dataset():
 
 
 # ============================================================================
+# PIPELINE 6: REQUIREMENT → INTELLIGENCE (spec / justification / history / tender / equipment / policy)
+# ============================================================================
+
+def _intel_sources(items: List[Dict[str, Any]], text_key: str = "excerpt"):
+    for src in items:
+        label = f"[{src.get('citation') or src.get('chunk_id') or '-'}] {src.get('proposal_id') or src.get('title') or ''}"
+        with st.expander(label):
+            st.caption(f"{src.get('document_type') or src.get('record_type') or ''} · synthetic={src.get('synthetic', True)}")
+            st.write(src.get(text_key) or src.get("text") or "")
+
+
+def _inr(value) -> str:
+    return f"{value:,.0f}" if isinstance(value, (int, float)) else "n/a"
+
+
+def render_pipeline_6_requirement_intelligence():
+    """Officer journey: Requirement → Spec checklist → Justification draft → History → Tender history → Equipment → Policy."""
+    st.markdown('<div class="pipeline-stage">🧭 Pipeline 6: Requirement → Intelligence</div>', unsafe_allow_html=True)
+    st.warning("SYNTHETIC DEMO DATA - NOT AN OFFICIAL GOVERNMENT RECORD. PRISM-PY never recommends a vendor for award.")
+
+    docs = make_api_request("/api/documents", method="GET")
+    doc_options = {"(none - describe the requirement below)": None}
+    for d in docs.get("documents", []) if docs.get("success") else []:
+        doc_options[f"{d.get('filename')} · {d.get('id', '')[:8]}"] = d.get("id")
+
+    with st.form("requirement_form"):
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            what = st.text_area(
+                "What is needed",
+                value=st.session_state.get("p6_what", "12 IP CCTV cameras, 4MP with IR, for station entry and exit coverage"),
+                height=80,
+            )
+            purpose = st.text_area(
+                "Purpose / operational gap",
+                value=st.session_state.get("p6_purpose", "Evidence capture at entry/exit points; night coverage"),
+                height=80,
+            )
+        with col2:
+            quantity = st.text_input("Quantity", value=st.session_state.get("p6_quantity", "12"))
+            location = st.text_input("Location / station", value=st.session_state.get("p6_location", "Demo North Station"))
+            equipment_class = st.selectbox("Equipment class", ["auto", "cctv", "radio", "vehicle", "training", "other"], index=0)
+            doc_choice = st.selectbox("Attach uploaded document (optional)", list(doc_options.keys()))
+        persist = st.checkbox("Save this requirement to the database", value=True)
+        submitted = st.form_submit_button("Run intelligence pack", use_container_width=True)
+
+    if submitted:
+        if not what.strip() and doc_options.get(doc_choice) is None:
+            st.error("Describe what is needed or attach a document.")
+            return
+        payload = {
+            "what_is_needed": what,
+            "quantity": quantity,
+            "location": location,
+            "purpose": purpose,
+            "equipment_class": None if equipment_class == "auto" else equipment_class,
+            "document_id": doc_options.get(doc_choice),
+            "persist": persist,
+        }
+        with st.spinner("Assembling specification, justification, history, tender, equipment and policy views..."):
+            result = make_api_request("/api/intelligence/pack", method="POST", data=payload)
+        if not result.get("success"):
+            st.error(result.get("error") or result.get("detail") or "Intelligence pack failed")
+            return
+        st.session_state["p6_pack"] = result
+        for k, v in (("p6_what", what), ("p6_purpose", purpose), ("p6_quantity", quantity), ("p6_location", location)):
+            st.session_state[k] = v
+
+    pack = st.session_state.get("p6_pack")
+    if not pack:
+        st.info("Fill in the requirement and run the pack. Every step is retrieved from the labelled corpus; empty cells stay 'not in file'.")
+        return
+
+    req = pack.get("requirement", {})
+    st.success(f"Detected equipment class: **{req.get('equipment_class')}** · flow: {' → '.join(pack.get('flow', []))}")
+    if pack.get("requirement_id"):
+        st.caption(f"Saved as requirement {pack['requirement_id']}")
+
+    tabs = st.tabs([
+        "📐 Specification", "📝 Justification", "📚 History", "🏷️ Tender history",
+        "🔧 Equipment", "📜 Policy / SOP", "⚠️ Outcomes & risks",
+    ])
+
+    with tabs[0]:
+        spec = pack.get("specification", {})
+        st.markdown("#### Spec checklist - this request vs. fixed checklist per class")
+        rows = [
+            {
+                "Field": c["label"],
+                "In this request": c.get("in_this_request") or "not stated",
+                "Status": "✅ stated" if c["status"] == "stated" else "❌ missing",
+                "Why it matters": c.get("why_it_matters"),
+            }
+            for c in spec.get("checklist", [])
+        ]
+        if rows:
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        if spec.get("missing_spec_fields"):
+            st.warning("Missing from this request: " + ", ".join(spec["missing_spec_fields"]))
+        st.markdown("#### Evaluation points (fixed per class, not LLM-invented)")
+        for pt in spec.get("evaluation_points", []):
+            st.markdown(f"- {pt}")
+        st.markdown("#### Previous specifications on file")
+        _intel_sources(spec.get("previous_specifications", []))
+        st.caption(spec.get("note", ""))
+
+    with tabs[1]:
+        just = pack.get("justification", {})
+        st.markdown("#### Draft justification (officer must edit)")
+        edited = st.text_area("Draft", value=just.get("draft", ""), height=320, key="p6_just_draft")
+        st.download_button("Download draft (.txt)", edited, file_name="justification_draft.txt")
+        citations = ", ".join(f"`{c}`" for c in just.get("citations", [])) or "none retrieved"
+        st.markdown("Citations: " + citations)
+        _intel_sources(just.get("sources", []), text_key="text")
+
+    with tabs[2]:
+        st.markdown("#### Similar historical proposals (synthetic index)")
+        _intel_sources(pack.get("historical_proposals", []), text_key="text")
+
+    with tabs[3]:
+        proc = pack.get("procurement", {})
+        st.info(proc.get("notice", ""))
+        price = proc.get("indicative_price_summary", {})
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Sample size", price.get("sample_size", 0))
+        c2.metric("Min INR", _inr(price.get("min_inr")))
+        c3.metric("Median INR", _inr(price.get("median_inr")))
+        c4.metric("Max INR", _inr(price.get("max_inr")))
+        st.caption(price.get("limitation", ""))
+        for t in proc.get("historical_tenders", []):
+            with st.expander(f"{t.get('tender_id')} · {t.get('title')} · {t.get('procurement_type')} · {t.get('year')}"):
+                st.write(
+                    f"**Quantity:** {t.get('quantity')} · **Indicative amount:** {_inr(t.get('indicative_amount_inr'))} "
+                    f"· **Decision:** {t.get('decision_status')}"
+                )
+                st.write(f"**Spec summary:** {t.get('specification_summary')}")
+                bidders = t.get("historical_bidders", [])
+                if bidders:
+                    st.markdown("Historical participants (who took part, not who should win):")
+                    st.dataframe(
+                        pd.DataFrame(bidders)[["display_name", "quoted_amount_inr", "result"]],
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                else:
+                    st.caption("Bidder table: not in file")
+        st.markdown(
+            f"Vendor selection: **{proc.get('vendor_selection')}** · recommended vendor: **{proc.get('recommended_vendor')}**"
+        )
+
+    with tabs[4]:
+        eq = pack.get("equipment", {})
+        cat = eq.get("category") or {}
+        st.markdown(f"#### {cat.get('name', 'Equipment class')} - comparison matrix")
+        st.caption(cat.get("description", ""))
+        models = eq.get("models_or_classes", [])
+        if models:
+            axes = cat.get("comparison_points", [])
+            matrix = []
+            for m in models:
+                row = {"Class": m.get("category_name")}
+                for ax in axes:
+                    row[ax] = (m.get("specs") or {}).get(ax, "not in file")
+                matrix.append(row)
+            st.dataframe(pd.DataFrame(matrix), use_container_width=True, hide_index=True)
+            for m in models:
+                st.caption(f"{m.get('category_name')}: {m.get('notes')} (source: {m.get('source')})")
+        else:
+            st.info("No catalogue entries for this class yet. Add them to backend/seed.py or a labelled catalogue ingest.")
+        st.markdown("#### Previous usage on file")
+        _intel_sources(eq.get("previous_usage", []))
+        st.info(eq.get("notice", ""))
+
+    with tabs[5]:
+        pol = pack.get("policy_sop", {})
+        for p in pol.get("policies", []):
+            with st.expander(f"{p.get('title')} · {p.get('record_type', '')} · official={p.get('official', False)}"):
+                st.write(p.get("excerpt", ""))
+                st.caption(f"Match: {p.get('match_kind')} · {p.get('validity_warning', '')}")
+        st.caption(pol.get("note", ""))
+
+    with tabs[6]:
+        risk = pack.get("outcomes_and_risks", {})
+        st.markdown("#### Officer should verify")
+        for v in risk.get("officer_should_verify", []):
+            st.markdown(f"- {v}")
+        st.markdown("#### Previous outcomes on file")
+        _intel_sources(risk.get("previous_outcomes", []))
+
+    st.download_button("Download full intelligence pack (JSON)", json.dumps(pack, indent=2), file_name="intelligence_pack.json")
+
+
+# ============================================================================
 # MAIN APP
 # ============================================================================
 
@@ -1026,7 +1219,7 @@ def sidebar_navigation():
     st.sidebar.markdown(f"**Status:** {status_color} {status_text}")
     
     if not is_healthy:
-        st.sidebar.error("⚠️ Start API: `python3 main_safe.py`")
+        st.sidebar.error("⚠️ Start API: `python run_api.py`")
     
     st.sidebar.markdown("---")
     
@@ -1040,6 +1233,7 @@ def sidebar_navigation():
             "💰 Cost Analysis",
             "📚 Citation Validation",
             "🧪 Demo Dataset Retrieval",
+            "🧭 Requirement → Intelligence",
         ],
         index=0
     )
@@ -1083,6 +1277,8 @@ def main():
         render_pipeline_5_citations()
     elif pipeline == "🧪 Demo Dataset Retrieval":
         render_pipeline_demo_dataset()
+    elif pipeline == "🧭 Requirement → Intelligence":
+        render_pipeline_6_requirement_intelligence()
 
 
 if __name__ == "__main__":

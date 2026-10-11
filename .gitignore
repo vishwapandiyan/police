@@ -19,3 +19,6 @@ logs/*.log
 
 # Temp uploads
 temp_*.tmp
+
+# Local SQLite + uploads (FastAPI backend)
+data/
