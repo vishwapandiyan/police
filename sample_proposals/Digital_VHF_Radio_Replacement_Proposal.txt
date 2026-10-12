@@ -1,0 +1,32 @@
+PROPOSAL FOR: Digital Encrypted VHF Radio Handset Modernization — Mobile Patrol Wing (Demo)
+DEPARTMENT: Operations Wing / Wireless & Telecommunications Branch
+POLICE STATION: Puducherry Central Station (Demo)
+LOCATION: Puducherry Central and Urban Sub-Division
+JURISDICTION: Puducherry District
+
+OBJECTIVE:
+To procure and deploy 40 military-grade Digital Mobile Radio (DMR) handheld transceivers with end-to-end AES-256 voice encryption, GPS location reporting, and multi-channel capability for law enforcement patrol squads and PCR vehicles operating in high-density urban areas.
+
+PURPOSE:
+Replace aging analogue VHF walkie-talkies that suffer from RF signal eavesdropping, severe audio distortion in dense urban sectors, and frequent dead-battery issues during 12-hour festival and public gathering deployments.
+
+PROBLEM STATEMENT:
+Current analogue radio communications are open and unencrypted, making operational transmissions vulnerable to interception by unauthorized parties during sensitive crowd control and VIP convoy escort duties. Battery degradation across the existing fleet results in communication blackout after 4 hours of field usage.
+
+TECHNICAL SPECIFICATIONS:
+DMR Tier II standard compliance; 136-174 MHz VHF frequency band; 5W RF output power; MIL-STD-810G ruggedization; IP68 submersible water and dust protection; AES-256 hardware encryption; integrated GPS/GLONASS tracking; minimum 2500 mAh Li-ion battery supporting 14-hour duty cycle; dual-slot TDMA technology; programmable emergency panic button with automatic location beacon.
+
+QUANTITY:
+40 Handheld Digital Transceivers + 80 Spare Rechargeable Battery Packs + 8 Multi-Unit Gang Chargers
+
+ESTIMATED BUDGET:
+INR 6,40,000 (Six Lakhs Forty Thousand Indian Rupees)
+
+TIMELINE:
+2 months from sanction order
+
+PROCUREMENT METHOD:
+Direct purchase via Government e-Marketplace (GeM) against standardized PAC / Ministry of Home Affairs technical specifications
+
+EXPECTED OUTCOMES:
+100% encrypted operational tactical voice network; real-time automatic vehicle/officer location on CAD dispatch consoles; zero communication interception risk; extended 14-hour operational shift endurance.

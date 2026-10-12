@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FilePlus, Search, Filter } from 'lucide-react';
@@ -15,7 +15,7 @@ import type { Proposal } from '@/lib/types';
 const STATUSES = ['', 'DRAFT', 'SUBMITTED_FOR_REVIEW', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'RETURNED_FOR_MODIFICATION', 'COMPLETED', 'IMPLEMENTATION'];
 const CATEGORIES = ['', 'technology', 'infrastructure', 'procurement', 'training', 'vehicles', 'communication', 'operational', 'administrative', 'welfare'];
 
-export default function ProposalsPage() {
+function ProposalsContent() {
   const searchParams = useSearchParams();
   const [list, setList] = useState<Proposal[]>([]);
   const [total, setTotal] = useState(0);
@@ -179,5 +179,13 @@ export default function ProposalsPage() {
         )}
       </div>
     </AppLayout>
+  );
+}
+
+export default function ProposalsPage() {
+  return (
+    <Suspense fallback={<AppLayout><div className="gov-page"><LoadingSpinner text="Loading proposals..." /></div></AppLayout>}>
+      <ProposalsContent />
+    </Suspense>
   );
 }

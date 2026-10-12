@@ -26,10 +26,11 @@ const SECTIONS: { heading: string; items: NavItem[] }[] = [
   {
     heading: 'INTELLIGENCE',
     items: [
-      { label: 'Precedent Search', href: '/precedents',       icon: <Search size={13} /> },
-      { label: 'Policy & SOP',     href: '/policies',         icon: <BookOpen size={13} /> },
-      { label: 'Procurement',      href: '/procurement',      icon: <ShoppingCart size={13} /> },
-      { label: 'Equipment Library',href: '/procurement/gem',  icon: <Package size={13} /> },
+      { label: 'Precedent Search',    href: '/precedents',             icon: <Search size={13} /> },
+      { label: 'Policy & SOP',        href: '/policies',               icon: <BookOpen size={13} /> },
+      { label: 'Procurement Intel',   href: '/procurement',            icon: <ShoppingCart size={13} /> },
+      { label: 'Procurement Workflow',href: '/procurement/workflow',   icon: <Package size={13} /> },
+      { label: 'GeM Intelligence',    href: '/procurement/gem',        icon: <Package size={13} /> },
     ],
   },
   {

@@ -11,6 +11,7 @@ const ITEMS = [
   { label: 'Proposals',     href: '/proposals',       icon: <FileText size={14} /> },
   { label: 'Precedents',    href: '/precedents',      icon: <Search size={14} /> },
   { label: 'Procurement',   href: '/procurement',     icon: <ShoppingCart size={14} /> },
+  { label: 'Proc. Workflow',href: '/procurement/workflow', icon: <ShoppingCart size={14} /> },
   { label: 'Policies & SOP',href: '/policies',        icon: <BookOpen size={14} /> },
   { label: 'Decisions',     href: '/decisions',       icon: <CheckSquare size={14} /> },
   { label: 'Implementation',href: '/implementation',  icon: <Wrench size={14} /> },

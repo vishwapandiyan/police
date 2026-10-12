@@ -1,0 +1,32 @@
+PROPOSAL FOR: Digital Cyber Crime Forensics Lab Workstation & Mobile Extraction Unit (Demo)
+DEPARTMENT: Crime Branch / Cyber Crime Police Station
+POLICE STATION: Cyber Crime Cell, Puducherry
+LOCATION: Police Headquarters, Puducherry
+JURISDICTION: UT-wide
+
+OBJECTIVE:
+To establish a dedicated digital evidence forensic extraction suite comprising high-throughput hardware write-blockers, mobile device physical extraction software, and encrypted forensic storage for analyzing seized smartphones, hard disks, and network server logs in financial cyber fraud and extortion cases.
+
+PURPOSE:
+Enable rapid, legally admissible ISO/IEC 27037 compliant acquisition and cryptographic hash verification of digital evidence to reduce case backlog from 6 months to 72 hours and comply with evidentiary rules under the Bharatiya Sakshya Adhiniyam (BSA).
+
+PROBLEM STATEMENT:
+The Cyber Crime Cell currently depends on external state forensic laboratories for standard phone extractions, causing evidence analysis delays of 4 to 8 months. During this latency window, suspect accounts and digital wallets are emptied, and bail is routinely granted due to non-filing of timely forensic reports.
+
+TECHNICAL SPECIFICATIONS:
+Tower workstation with dual 24-core CPUs, 128GB ECC RAM, dedicated GPU acceleration; hardware write-blockers supporting SATA, SAS, PCIe, NVMe, USB 3.2; certified forensic software licenses for mobile device physical chip-off and logical extraction; encrypted NAS storage array of 100TB with SHA-256 validation logging; Faraday shielded RF isolation bags and transport cases.
+
+QUANTITY:
+1 Forensic Workstation + 1 Portable Field Extraction Kit + Forensic Software Licenses
+
+ESTIMATED BUDGET:
+INR 18,50,000 (Eighteen Lakhs Fifty Thousand Indian Rupees)
+
+TIMELINE:
+3 months including officer certification training
+
+PROCUREMENT METHOD:
+Two-bid open tender via GeM e-Procurement with mandatory OEM compliance certification
+
+EXPECTED OUTCOMES:
+In-house forensic processing of all seized smartphones and media within 72 hours; 100% chain of custody integrity with BSA-compliant digital certificates; 50% increase in cyber charge sheet filing velocity.

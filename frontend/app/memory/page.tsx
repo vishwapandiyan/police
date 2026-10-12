@@ -49,12 +49,12 @@ export default function InstitutionalMemoryPage() {
                 <div key={i} style={{ padding: '12px 16px', borderBottom: '1px solid var(--gov-border)', display: 'flex', gap: 12 }}>
                   <Archive size={16} color="var(--gov-muted)" style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--gov-navy)', marginBottom: 3 }}>{r.title as string}</div>
-                    {r.proposal_id && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--gov-muted)', marginBottom: 4 }}>{r.proposal_id as string}</div>}
-                    <p style={{ fontSize: '0.8rem', color: 'var(--gov-text-sec)', lineHeight: 1.5 }}>{r.lesson as string}</p>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--gov-navy)', marginBottom: 3 }}>{String(r.title || '')}</div>
+                    {Boolean(r.proposal_id) && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--gov-muted)', marginBottom: 4 }}>{String(r.proposal_id)}</div>}
+                    <p style={{ fontSize: '0.8rem', color: 'var(--gov-text-sec)', lineHeight: 1.5 }}>{String(r.lesson || '')}</p>
                     <div style={{ display: 'flex', gap: 6, marginTop: 5 }}>
-                      {r.category && <span className="badge badge-normal" style={{ fontSize: '0.62rem', textTransform: 'capitalize' }}>{r.category as string}</span>}
-                      {r.synthetic && <span className="badge badge-synthetic" style={{ fontSize: '0.62rem' }}>Synthetic</span>}
+                      {Boolean(r.category) && <span className="badge badge-normal" style={{ fontSize: '0.62rem', textTransform: 'capitalize' }}>{String(r.category)}</span>}
+                      {Boolean(r.synthetic) && <span className="badge badge-synthetic" style={{ fontSize: '0.62rem' }}>Synthetic</span>}
                     </div>
                   </div>
                 </div>

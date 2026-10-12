@@ -1,0 +1,32 @@
+PROPOSAL FOR: AI-Enabled CCTV Camera Expansion — Lawspet and Gorimedu Sub-Divisions (Demo)
+DEPARTMENT: Technical Wing / Surveillance Division
+POLICE STATION: Gorimedu Police Station
+LOCATION: Gorimedu and Lawspet, Puducherry District
+JURISDICTION: Puducherry District
+
+OBJECTIVE:
+To expand digital IP surveillance coverage across 14 vulnerable traffic junctions and public thoroughfares in Gorimedu and Lawspet police station limits, connecting high-resolution video streams to the district control room with automated number-plate recognition and motion detection.
+
+PURPOSE:
+Upgrade existing standalone analogue cameras to high-definition IP-based CCTV system with 30-day evidentiary retention, automated vehicle registration tracking, and night-vision capabilities to support crime prevention, traffic monitoring, and incident investigation.
+
+PROBLEM STATEMENT:
+Current security infrastructure in Lawspet and Gorimedu relies on obsolete 2017 analogue cameras with poor illumination sensitivity and no network connectivity. Recorded footage frequently fails legal admissibility thresholds due to low resolution, and frequent video loss impedes post-incident reconstruction.
+
+TECHNICAL SPECIFICATIONS:
+4MP IP dome and bullet cameras; H.265 video compression; 40m infrared night vision; minimum 30 frames per second; ONVIF Profile S/G/T compliance; weatherproof IP67 housing; 2 units of 32-channel Network Video Recorders (NVR) with RAID-5 storage; 60TB surveillance-grade storage arrays; PoE network switches; unified optical fiber backbone.
+
+QUANTITY:
+50 IP Cameras (30 bullet, 20 dome) + 2 NVR Units + 4 PoE Switches
+
+ESTIMATED BUDGET:
+INR 25,00,000 (Twenty-Five Lakhs Indian Rupees)
+
+TIMELINE:
+4 months from administrative sanction to operational acceptance testing
+
+PROCUREMENT METHOD:
+Open competitive bidding via Government e-Marketplace (GeM) custom bid
+
+EXPECTED OUTCOMES:
+100% video coverage of designated sensitive intersections; 30-day continuous evidentiary recording; 40% reduction in response time for reported street offences; integration with Emergency Response Support System (ERSS-112).

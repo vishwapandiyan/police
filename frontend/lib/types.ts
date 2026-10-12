@@ -278,3 +278,197 @@ export interface AuditEvent {
 export interface ApiError {
   detail: string;
 }
+
+// RAG Pipeline Types
+export interface RAGHealthStatus {
+  rag_pipeline: 'online' | 'offline' | 'error';
+  flask_url?: string;
+  status?: string;
+  service?: string;
+  demo_index_ready?: boolean;
+  flask_response?: Record<string, unknown>;
+  message?: string;
+  detail?: string;
+}
+
+export interface RAGSourceChunk {
+  rank: number;
+  score: number;
+  chunk_id?: string;
+  document_id?: string;
+  proposal_id?: string;
+  source_filename?: string;
+  source_location?: string;
+  chunk_sequence?: number;
+  text?: string;
+  synthetic?: boolean;
+  data_classification?: string;
+}
+
+export interface RAGQueryResult {
+  success: boolean;
+  question: string;
+  mode?: string;
+  answer: string;
+  sources: RAGSourceChunk[];
+  citations?: string[];
+  retrieved_count: number;
+  synthetic_only?: boolean;
+  data_classification?: string;
+  timestamp?: string;
+  error?: string;
+}
+
+export interface RAGDecisionBriefResult {
+  success: boolean;
+  proposal_id: string;
+  brief: {
+    title?: string;
+    proposal_summary?: string;
+    precedents_count?: number;
+    review_signals_count?: number;
+    high_priority_signals?: number;
+    processing_time_seconds?: number;
+    missing_information?: string[];
+    top_precedents?: Array<{
+      document_id?: string;
+      title?: string;
+      document_title?: string;
+      similarity_score?: number;
+      excerpt?: string;
+      source_reference?: string;
+      match_reason?: string;
+      synthetic?: boolean;
+    }>;
+    review_signals?: Array<{
+      signal_type?: string;
+      severity?: string;
+      title?: string;
+      description?: string;
+      recommendation?: string;
+    }>;
+    sections?: Record<string, unknown>;
+    overall_confidence?: string;
+    confidence_note?: string;
+    notice?: string;
+    [key: string]: unknown;
+  };
+  executive_summary?: string;
+  timestamp?: string;
+  error?: string;
+}
+
+export interface RAGDnaResult {
+  success?: boolean;
+  proposal_id?: string;
+  dna?: Record<string, unknown>;
+  completeness_score?: number;
+  extracted_fields?: Record<string, unknown>;
+  missing_fields?: string[];
+  [key: string]: unknown;
+}
+
+export interface ProposalDocumentIntelligenceResult {
+  success: boolean;
+  document_info: {
+    filename: string;
+    size: number;
+    mime_type: string;
+    characters_extracted: number;
+    status: string;
+  };
+  proposal_dna: {
+    title: string;
+    department: string;
+    requesting_unit: string;
+    location: string;
+    police_station: string;
+    jurisdiction: string;
+    requirement: string;
+    objective: string;
+    technology: string;
+    quantity: string;
+    budget: string;
+    timeline: string;
+    procurement_type: string;
+    expected_outcomes: string;
+    missing_fields: string[];
+  };
+  precedents: Array<{
+    rank: number;
+    proposal_id: string;
+    title: string;
+    unit: string;
+    location: string;
+    requirement: string;
+    budget: string;
+    decision: string;
+    outcome: string;
+    relevance_score: number;
+    why_match: Record<string, string>;
+    excerpt: string;
+    source_filename?: string;
+    citation?: string;
+    synthetic: boolean;
+  }>;
+  policies: Array<PolicyResult>;
+  procurement: {
+    equipment_class?: string;
+    historical_tenders?: Array<{
+      tender_id?: string;
+      proposal_id?: string;
+      title?: string;
+      procurement_type?: string;
+      quantity?: string;
+      indicative_amount_inr?: number;
+      decision_status?: string;
+      year?: number;
+      location?: string;
+      specification_summary?: string;
+      historical_bidders?: Array<{
+        display_name: string;
+        quoted_amount_inr?: number;
+        result?: string;
+      }>;
+    }>;
+    indicative_price_summary?: {
+      sample_size?: number;
+      min_inr?: number;
+      max_inr?: number;
+      median_inr?: number;
+      limitation?: string;
+    };
+    notice?: string;
+  };
+  historical_outcomes: Array<{
+    title: string;
+    lesson: string;
+    category: string;
+    source: string;
+  }>;
+  risk_signals: Array<{
+    type: string;
+    severity: string;
+    title: string;
+    description: string;
+    recommendation?: string;
+  }>;
+  evidence_sources: Array<{
+    rank: number;
+    chunk_id?: string;
+    proposal_id?: string;
+    source_filename?: string;
+    score?: number;
+    excerpt: string;
+  }>;
+  decision_brief: {
+    title: string;
+    executive_summary: string;
+    precedents_count: number;
+    review_points: string[];
+    governance_notice: string;
+  };
+  data_classification: string;
+  timestamp: string;
+}
+

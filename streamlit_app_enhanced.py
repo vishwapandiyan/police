@@ -282,7 +282,7 @@ def render_pipeline_1_upload_to_brief():
         analyze_button = st.button("🔍 Extract DNA", use_container_width=True, key="p1_analyze")
     
     with col2:
-        brief_button = st.button("📊 Generate Brief", use_container_width=True, key="p1_brief", 
+        brief_button = st.button("📊 Generate Brief", use_container_width=True, key="p1_brief_btn", 
                                 disabled=not st.session_state.get('p1_dna_extracted', False))
     
     with col3:
@@ -353,19 +353,17 @@ def render_pipeline_1_upload_to_brief():
         if result.get('success'):
             st.success("✅ Decision Brief Generated!")
             st.session_state['p1_brief'] = result
-            
             # Display Brief
-            display_decision_brief(result, show_download=True)
+            display_decision_brief(result, show_download=True, key_suffix="new")
         else:
             st.error(f"❌ Brief generation failed: {result.get('error', 'Unknown error')}")
     
     # Show previously generated results
+    elif st.session_state.get('p1_brief'):
+        display_decision_brief(st.session_state['p1_brief'], show_download=True, key_suffix="saved")
     elif st.session_state.get('p1_dna_extracted'):
         st.info("📋 DNA extracted. Click 'Generate Brief' to continue the pipeline.")
         display_proposal_dna(st.session_state['p1_dna'], show_actions=True)
-    
-    if st.session_state.get('p1_brief'):
-        display_decision_brief(st.session_state['p1_brief'], show_download=True)
 
 
 # ============================================================================
@@ -806,7 +804,7 @@ def display_proposal_dna(result: Dict[str, Any], show_actions: bool = False):
                 st.warning(f"• {field.replace('_', ' ').title()}")
 
 
-def display_decision_brief(result: Dict[str, Any], show_download: bool = False):
+def display_decision_brief(result: Dict[str, Any], show_download: bool = False, key_suffix: str = ""):
     """Display Decision Intelligence Brief"""
     
     st.markdown("### 📊 Decision Intelligence Brief")
@@ -863,11 +861,13 @@ def display_decision_brief(result: Dict[str, Any], show_download: bool = False):
     
     # Download
     if show_download:
+        dl_key = f"dl_brief_{key_suffix}" if key_suffix else "dl_brief"
         st.download_button(
             "📥 Download Brief (JSON)",
             data=json.dumps(result, indent=2),
             file_name=f"decision_brief_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json"
+            mime="application/json",
+            key=dl_key
         )
 
 

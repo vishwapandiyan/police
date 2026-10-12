@@ -34,6 +34,7 @@ class Settings:
     )
     host: str = os.getenv("HOST", "0.0.0.0")
     port: int = int(os.getenv("PORT", "5001"))
+    flask_rag_url: str = os.getenv("FLASK_RAG_URL", "http://localhost:5002")
     sqlite_url: str = os.getenv("PRISM_DATABASE_URL", f"sqlite:///{SQLITE_PATH.as_posix()}")
     nvidia_api_key: str = os.getenv("NVIDIA_API_KEY", "")
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

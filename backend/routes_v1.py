@@ -25,7 +25,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-from fastapi import APIRouter, Body, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
@@ -877,7 +877,343 @@ def search_precedents(
     }
 
 
+@router.post("/precedents/analyze-document")
+async def analyze_proposal_document_for_precedents(
+    file: Optional[UploadFile] = File(None),
+    text: Optional[str] = Form(None),
+    proposal_id: Optional[str] = Form(None),
+    user: Optional[User] = Depends(get_current_user_optional),
+    db: Session = Depends(get_db),
+):
+    """
+    PRISM-PY Final Precedent Intelligence Workflow:
+    The officer's uploaded proposal document drives the complete intelligence pipeline:
+    PROPOSAL DOCUMENT -> TEXT/OCR -> PROPOSAL DNA -> MULTI-SIGNAL PRECEDENT RETRIEVAL
+    -> EVIDENCE-BACKED WHY-MATCH -> POLICY/SOP CROSS-REFERENCE -> PROCUREMENT INTELLIGENCE
+    -> RELATED DECISIONS & HISTORICAL OUTCOMES -> CONFLICT/OVERLAP SIGNALS -> DECISION BRIEF.
+    """
+    import re
+    from pathlib import Path
+    settings_mod = __import__("backend.settings", fromlist=["get_settings"])
+    settings = settings_mod.get_settings()
+
+    extracted_text = ""
+    filename = "Pasted_Proposal.txt"
+    file_size = 0
+    mime_type = "text/plain"
+
+    # 1. Document Extraction / Ingest
+    if file is not None and file.filename:
+        filename = Path(file.filename).name
+        ext = Path(filename).suffix.lower()
+        allowed = {".pdf", ".docx", ".txt", ".pptx", ".xlsx"}
+        if ext not in allowed:
+            _fail(400, f"Unsupported file type '{ext}'. Supported formats: PDF, DOCX, TXT, PPTX, XLSX")
+
+        raw = await file.read()
+        file_size = len(raw)
+        if file_size > settings.max_upload_mb * 1024 * 1024:
+            _fail(413, f"File exceeds maximum allowed size ({settings.max_upload_mb} MB)")
+
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = UPLOAD_DIR / f"tmp_{uuid.uuid4()}_{filename}"
+        tmp.write_bytes(raw)
+        try:
+            extracted_text, mime_type = extract_text(tmp, raw)
+        finally:
+            tmp.unlink(missing_ok=True)
+
+        if not extracted_text and ext == ".txt":
+            extracted_text = raw.decode("utf-8", errors="ignore")
+    elif text and text.strip():
+        extracted_text = text.strip()
+        file_size = len(extracted_text.encode("utf-8"))
+        filename = "Officer_Input_Proposal.txt"
+        mime_type = "text/plain"
+    elif proposal_id:
+        p = db.get(Proposal, proposal_id)
+        if not p:
+            _fail(404, "Proposal not found")
+        filename = f"{p.proposal_number}.txt"
+        mime_type = "database/record"
+        parts = [
+            f"Title: {p.title or ''}",
+            f"Department: {p.department or ''}",
+            f"Purpose: {p.purpose or ''}",
+            f"Problem Statement: {p.problem_statement or ''}",
+            f"Expected Outcome: {p.expected_outcome or ''}",
+            f"Location: {p.station or p.region or ''}",
+            f"Technology: {p.technology or ''}",
+            f"Quantity: {p.quantity or ''}",
+            f"Budget: {p.estimated_cost or ''} {p.currency or 'INR'}",
+            f"Specification: {p.specification or ''}",
+        ]
+        pdocs = db.scalars(select(ProposalDocument).where(ProposalDocument.proposal_id == proposal_id)).all()
+        for pdoc in pdocs:
+            if pdoc.document_id:
+                doc = db.get(Document, pdoc.document_id)
+                if doc and doc.content:
+                    parts.append(doc.content[:3000])
+        extracted_text = "\n".join(parts)
+        file_size = len(extracted_text.encode("utf-8"))
+    else:
+        _fail(400, "Please upload a proposal document (PDF, DOCX, TXT) or select a sample proposal.")
+
+    if not extracted_text or len(extracted_text.strip()) < 15:
+        _fail(400, "Could not extract readable proposal content from the document.")
+
+    # 2. Extract Structured Proposal DNA
+    doc_id = str(uuid.uuid4())
+    dna_obj = extract_structured_dna(extracted_text, doc_id, filename)
+    dna_dict = serialize_dna(dna_obj, filename).get("proposal_dna", {})
+
+    def _find_field(key: str, pattern: str) -> Optional[str]:
+        val = dna_dict.get(key)
+        if val and str(val).strip():
+            return str(val).strip()
+        m = re.search(pattern, extracted_text, flags=re.IGNORECASE)
+        if m:
+            clean = m.group(1).strip().split("\n")[0].strip(" -:\t")
+            if clean:
+                return clean
+        return None
+
+    title = _find_field("title", r"(?:Title|Proposal For|Subject)\s*[:\-]\s*(.+)") or filename.rsplit(".", 1)[0].replace("_", " ")
+    objective = _find_field("objective", r"(?:Objective|Purpose|Scope of Work)\s*[:\-]\s*(.+)")
+    requirement = objective or _find_field("requirement", r"(?:Requirement|Needs|Scope)\s*[:\-]\s*(.+)")
+    technology = _find_field("technology", r"(?:Technology|Equipment|Technical Specifications?)\s*[:\-]\s*(.+)")
+    location = _find_field("location", r"(?:Location|Site|Stations?)\s*[:\-]\s*(.+)")
+    police_station = _find_field("police_station", r"(?:Police Station|Station|Unit)\s*[:\-]\s*(.+)") or location
+    jurisdiction = _find_field("jurisdiction", r"(?:Jurisdiction|Region|District)\s*[:\-]\s*(.+)") or ("Puducherry District" if "Puducherry" in extracted_text else "UT-wide")
+    department = _find_field("department", r"(?:Department|Wing|Division)\s*[:\-]\s*(.+)") or ("Technical Wing" if "CCTV" in extracted_text or "radio" in extracted_text.lower() else "Operations")
+    quantity = _find_field("scale", r"(?:Quantity|Units|Scale|Scope)\s*[:\-]\s*(.+)")
+    timeline = _find_field("timeline", r"(?:Timeline|Duration|Period)\s*[:\-]\s*(.+)")
+    procurement_type = _find_field("procurement_type", r"(?:Procurement Method|Procurement Type|Mode)\s*[:\-]\s*(.+)")
+    expected_outcomes = _find_field("expected_outcomes", r"(?:Expected Outcomes?|Deliverables?|Impact)\s*[:\-]\s*(.+)")
+    budget_raw = dna_dict.get("budget")
+    if budget_raw is None:
+        money_match = re.search(r"INR\s*([\d,]+)", extracted_text, flags=re.IGNORECASE)
+        if money_match:
+            try:
+                budget_raw = float(money_match.group(1).replace(",", ""))
+            except ValueError:
+                pass
+
+    clean_dna = {
+        "title": title,
+        "department": department or "Not identified in proposal.",
+        "requesting_unit": police_station or "Not identified in proposal.",
+        "location": location or "Not identified in proposal.",
+        "police_station": police_station or "Not identified in proposal.",
+        "jurisdiction": jurisdiction or "Not identified in proposal.",
+        "requirement": requirement or "Not identified in proposal.",
+        "objective": objective or "Not identified in proposal.",
+        "technology": technology or "Not identified in proposal.",
+        "quantity": quantity or "Not identified in proposal.",
+        "budget": f"INR {budget_raw:,.2f}" if isinstance(budget_raw, (int, float)) else (str(budget_raw) if budget_raw else "Not identified in proposal."),
+        "timeline": timeline or "Not identified in proposal.",
+        "procurement_type": procurement_type or "Not identified in proposal.",
+        "expected_outcomes": expected_outcomes or "Not identified in proposal.",
+        "missing_fields": [
+            f for f in ["department", "location", "objective", "technology", "quantity", "budget", "timeline"]
+            if (department if f == "department" else location if f == "location" else objective if f == "objective" else technology if f == "technology" else quantity if f == "quantity" else budget_raw if f == "budget" else timeline) is None
+        ]
+    }
+
+    # 3. The Proposal IS the Search Query:
+    query_parts = []
+    if title: query_parts.append(title)
+    if objective: query_parts.append(objective)
+    if technology: query_parts.append(technology)
+    if location: query_parts.append(location)
+    if quantity: query_parts.append(quantity)
+    if procurement_type: query_parts.append(procurement_type)
+    retrieval_query = " ".join(query_parts) if query_parts else extracted_text[:300]
+
+    # 4. Multi-Signal Historical Precedent Retrieval & Evidence Ranking
+    chunks = search_demo_index(retrieval_query, top_k=10)
+    db_proposals = db.scalars(select(Proposal)).all()
+
+    precedents_list = []
+    seen_proposals = set()
+
+    for chunk in chunks:
+        prop_id = chunk.get("proposal_id") or "SYN-PREC"
+        if prop_id in seen_proposals:
+            continue
+        seen_proposals.add(prop_id)
+
+        matched_db = next((p for p in db_proposals if p.proposal_number == prop_id or prop_id in (p.title or "")), None)
+        chunk_text = (chunk.get("text") or "").lower()
+        score = chunk.get("score", 1.0)
+
+        # Truthful Why-Match Factor Evaluation
+        why_match = {}
+        if any(term in chunk_text for term in ["objective", "cctv", "camera", "radio", "network", "modernization", "surveillance", "training"]):
+            why_match["Objective Similarity"] = f"Related operational goal ({technology or 'equipment modernization'})"
+        else:
+            why_match["Objective Similarity"] = "Not evaluated"
+
+        if technology and any(tech_term in chunk_text for tech_term in technology.lower().split() if len(tech_term) > 3):
+            why_match["Technology Similarity"] = f"Aligned hardware: {technology}"
+        elif any(t in chunk_text for t in ["cctv", "camera", "radio", "switch", "sensor"]):
+            why_match["Technology Similarity"] = "Comparable policing equipment"
+        else:
+            why_match["Technology Similarity"] = "Not evaluated"
+
+        if location and location.lower() in chunk_text:
+            why_match["Jurisdiction Similarity"] = f"Same station/zone: {location}"
+        elif "puducherry" in chunk_text:
+            why_match["Jurisdiction Similarity"] = "Same District (Puducherry District)"
+        else:
+            why_match["Jurisdiction Similarity"] = "UT-wide"
+
+        if matched_db and matched_db.estimated_cost and budget_raw and isinstance(budget_raw, (int, float)):
+            diff_pct = abs(matched_db.estimated_cost - budget_raw) / max(budget_raw, 1)
+            if diff_pct < 0.4:
+                why_match["Budget/Scale Similarity"] = f"Comparable scale: INR {matched_db.estimated_cost:,.0f}"
+            else:
+                why_match["Budget/Scale Similarity"] = f"Different scale tier (Historical: INR {matched_db.estimated_cost:,.0f})"
+        else:
+            why_match["Budget/Scale Similarity"] = "Illustrative historical scale"
+
+        decision_val = "On Record"
+        if "approved" in chunk_text and "successful" in chunk_text:
+            decision_val = "Approved & Verified Successful"
+        elif "deferred" in chunk_text:
+            decision_val = "Deferred (Scope/Budget review)"
+        elif "rejected" in chunk_text:
+            decision_val = "Rejected"
+        elif matched_db:
+            decision_val = matched_db.status.replace("_", " ").title()
+        why_match["Historical Decision"] = decision_val
+
+        rel_score = round(min(score / 8.0, 0.95), 2)
+        precedents_list.append({
+            "rank": len(precedents_list) + 1,
+            "proposal_id": prop_id,
+            "title": (matched_db.title if matched_db else (chunk.get("source_filename") or f"Historical Proposal {prop_id}")),
+            "unit": (matched_db.department if matched_db else "Police Department"),
+            "location": (matched_db.station if matched_db else "Puducherry"),
+            "requirement": (matched_db.purpose if matched_db else chunk.get("text")[:140]),
+            "budget": f"INR {matched_db.estimated_cost:,.0f}" if matched_db and matched_db.estimated_cost else "Illustrative demo amount",
+            "decision": decision_val,
+            "outcome": (matched_db.expected_outcome if matched_db else "Historical reference on file"),
+            "relevance_score": rel_score,
+            "why_match": why_match,
+            "excerpt": chunk.get("text")[:280],
+            "source_filename": chunk.get("source_filename") or "synthetic_demo_index",
+            "citation": chunk.get("chunk_id") or f"chunk-{prop_id}",
+            "synthetic": True,
+        })
+
+    # 5. Policy & SOP Cross-Reference
+    policy_res = policy_search(db, {"what_is_needed": retrieval_query, "document_text": extracted_text})
+    policies_list = policy_res.get("policies", [])
+
+    # 6. Procurement Intelligence
+    proc_res = procurement_intelligence(db, {"what_is_needed": retrieval_query, "quantity": quantity, "location": location, "document_text": extracted_text})
+
+    # 7. Historical Outcomes & Lessons
+    outcomes_list = []
+    lessons = db.scalars(select(LessonRecord)).all()
+    for l in lessons[:4]:
+        outcomes_list.append({
+            "title": l.title,
+            "lesson": l.lesson_text,
+            "category": l.category or "Operations",
+            "source": "Historical Implementation Lesson"
+        })
+
+    # 8. Overlap & Conflict Signals
+    risk_signals = []
+    if "cctv" in retrieval_query.lower() and "expansion" in retrieval_query.lower():
+        risk_signals.append({
+            "type": "POTENTIAL_SCOPE_OVERLAP",
+            "severity": "MEDIUM",
+            "title": "Related Pilot and Add-on Work on Record",
+            "description": "Historical records indicate earlier CCTV pilot (SYN-PDY-CCTV-001) and deferred expansion (SYN-PDY-CCTV-002). Confirm work does not duplicate existing camera coverage.",
+            "recommendation": "Review previous pilot handover notes before sanctioning new camera positions."
+        })
+    if not clean_dna.get("budget") or clean_dna["budget"] == "Not identified in proposal.":
+        risk_signals.append({
+            "type": "MISSING_BUDGET_ESTIMATE",
+            "severity": "HIGH",
+            "title": "Budget Estimate Not Identified",
+            "description": "The proposal document does not clearly state an estimated financial outlay in INR.",
+            "recommendation": "Require submitting unit to attach cost basis or preliminary market estimate."
+        })
+    if not clean_dna.get("objective") or clean_dna["objective"] == "Not identified in proposal.":
+        risk_signals.append({
+            "type": "MISSING_OBJECTIVE",
+            "severity": "HIGH",
+            "title": "Clear Objective Statement Missing",
+            "description": "A specific measurable objective is required for administrative scrutiny.",
+            "recommendation": "Ask proposing unit to specify operational gap and success criteria."
+        })
+
+    # 9. Evidence Sources
+    evidence_sources = [
+        {
+            "rank": i + 1,
+            "chunk_id": c.get("chunk_id"),
+            "proposal_id": c.get("proposal_id"),
+            "source_filename": c.get("source_filename"),
+            "score": c.get("score"),
+            "excerpt": c.get("text")[:260],
+        }
+        for i, c in enumerate(chunks[:6])
+    ]
+
+    # 10. Evidence-Backed Decision Brief
+    decision_brief = {
+        "title": f"Precedent Intelligence Brief — {title}",
+        "executive_summary": (
+            f"Proposal analysis conducted for '{title}'. "
+            f"The proposal identifies requirement for {technology or requirement or 'departmental equipment'}. "
+            f"Cross-referencing the synthetic historical corpus identified {len(precedents_list)} relevant precedents, "
+            f"{len(policies_list)} policy/SOP references, and {len(proc_res.get('historical_tenders', []))} historical tender records. "
+            f"This brief provides decision intelligence for authorized administrative scrutiny. "
+            f"PRISM-PY provides reference intelligence only and does not award contracts or select vendors."
+        ),
+        "precedents_count": len(precedents_list),
+        "review_points": [
+            "Verify proposed technical specifications against departmental standardization guidelines.",
+            "Confirm location and station requirements do not overlap with existing sanction orders.",
+            "Check historical procurement tenders for specification neutrality before tender issuance.",
+            "Ensure mode of procurement strictly conforms to current GeM/GFR rules.",
+            "Authorized officer must independently evaluate and decide."
+        ],
+        "governance_notice": "SYNTHETIC DEMO DATA — NOT AN OFFICIAL GOVERNMENT RECORD. Final action remains with the authorized officer."
+    }
+
+    if user:
+        audit(db, "PRECEDENT_DOCUMENT_ANALYZED", actor=user, detail=f"file={filename}, len={len(extracted_text)}")
+
+    return {
+        "success": True,
+        "document_info": {
+            "filename": filename,
+            "size": file_size,
+            "mime_type": mime_type,
+            "characters_extracted": len(extracted_text),
+            "status": "Analysis Complete"
+        },
+        "proposal_dna": clean_dna,
+        "precedents": precedents_list,
+        "policies": policies_list,
+        "procurement": proc_res,
+        "historical_outcomes": outcomes_list,
+        "risk_signals": risk_signals,
+        "evidence_sources": evidence_sources,
+        "decision_brief": decision_brief,
+        "data_classification": SYNTHETIC_NOTICE,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+
 @router.get("/proposals/{proposal_id}/precedents")
+
 def proposal_precedents(
     proposal_id: str,
     user: User = Depends(get_current_user),

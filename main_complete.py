@@ -1081,8 +1081,8 @@ def get_document_chunks(doc_id: str):
 # ============================================================================
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5001))
-    logger.info(f"🚀 Starting PRISM-PY Complete API on port {port}")
+    port = int(os.getenv('FLASK_PORT', os.getenv('PORT', 5002)))
+    logger.info(f"🚀 Starting PRISM-PY Flask RAG API on port {port}")
     logger.info(f"📍 Health check: http://localhost:{port}/health")
     
     app.run(

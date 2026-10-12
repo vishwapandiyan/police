@@ -45,11 +45,20 @@ from .models_v1 import (  # ensure v1 tables are created
     Proposal, ProposalDNARecord, ProposalDocument, Session as UserSession, User,
     ProcessingJob,
 )
+from .models_procurement import (  # ensure procurement tables are created
+    ApprovalMatrix, ProcurementRequirement, ProcurementEvent, Bid,
+    TechnicalEvaluation, EvaluationCommittee, BidderEvaluation,
+    FinancialEvaluation, FinancialBidLine, PurchaseOrder,
+)
+from .migrations import run_migrations
 from .retrieval import answer_from_sources, demo_index_ready, demo_manifest, search_demo_index
 from .seed import seed_reference_data
 from .seed_v1 import seed_proposals_v1
 from .auth_v1 import seed_demo_users
 from .routes_v1 import router as v1_router
+from .routes_procurement import router as procurement_router
+from .routes_rag import router as rag_router
+from .seed_procurement import seed_procurement_data
 from .services import analyze_proposal, generate_brief, list_documents, save_requirement, save_upload
 from .settings import SYNTHETIC_LABEL, UPLOAD_DIR, VENDOR_NOTICE, get_settings
 
@@ -60,10 +69,12 @@ logger = logging.getLogger("prism.backend")
 async def lifespan(app: FastAPI):
     logging.basicConfig(level=get_settings().log_level)
     Base.metadata.create_all(engine)
+    run_migrations(engine)
     with session_scope() as db:
         seed_reference_data(db)
         seed_demo_users(db)
         seed_proposals_v1(db)
+        seed_procurement_data(db)
     logger.info("PRISM-PY API %s ready (sqlite=%s)", __version__, get_settings().sqlite_url)
     yield
 
@@ -81,8 +92,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount v1 routes
+# Mount routers
 app.include_router(v1_router)
+app.include_router(procurement_router)
+app.include_router(rag_router)
 
 
 @app.exception_handler(Exception)

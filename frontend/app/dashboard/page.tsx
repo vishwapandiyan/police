@@ -16,8 +16,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 const PIE_COLORS = ['#5F6B7A','#d97706','#1F5A92','#1a7a3c','#c0392b','#0B5D5E','#C9A227'];
 
-function getGreeting() {
-  const h = new Date().getHours();
+function getGreeting(d?: Date | null) {
+  if (!d) return 'Welcome';
+  const h = d.getHours();
   if (h < 12) return 'Good Morning';
   if (h < 17) return 'Good Afternoon';
   return 'Good Evening';
@@ -38,7 +39,8 @@ export default function DashboardPage() {
   useEffect(() => { load(); }, []);
 
   const firstName = user?.display_name?.split(' ')[0] || 'Officer';
-  const [now] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => { setNow(new Date()); }, []);
 
   const statusChartData = stats
     ? Object.entries(stats.by_status)
@@ -70,7 +72,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
             <div>
               <div className="welcome-title">
-                {getGreeting()}, <span>{firstName}</span>
+                {getGreeting(now)}, <span>{firstName}</span>
               </div>
               <div className="welcome-subtitle" style={{ marginTop: 4 }}>
                 Welcome to PRISM-PY<br />
@@ -80,13 +82,13 @@ export default function DashboardPage() {
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.72rem' }}>
-                {now.toLocaleDateString('en-IN', { weekday: 'long' })}
+                {now ? now.toLocaleDateString('en-IN', { weekday: 'long' }) : '—'}
               </div>
               <div style={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', marginTop: 2 }}>
-                {now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                {now ? now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
               </div>
               <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.82rem' }}>
-                {now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                {now ? now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'}
               </div>
               <Link href="/proposals/new" className="btn btn-teal btn-sm" style={{ marginTop: 12, color: 'white' }}>
                 <FilePlus size={13} /> + New Proposal
