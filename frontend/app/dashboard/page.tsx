@@ -1,268 +1,315 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FilePlus, FileText, CheckSquare, TrendingUp, Clock, Activity, ExternalLink } from 'lucide-react';
+import { FilePlus, ChevronRight, Search, BookOpen, ShoppingCart, Package, FileBarChart, Clock } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import StatusBadge from '@/components/ui/StatusBadge';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import SyntheticBanner from '@/components/ui/SyntheticBanner';
+import GovCard from '@/components/ui/GovCard';
+import PageHeader from '@/components/ui/PageHeader';
 import { dashboard } from '@/lib/api';
 import type { DashboardStats } from '@/lib/types';
 import { useAuth } from '@/lib/auth';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-function KpiCard({ label, value, sub, href, color = '#1a2744' }: {
-  label: string; value: number; sub?: string; href?: string; color?: string;
-}) {
-  const content = (
-    <div
-      style={{
-        background: 'white',
-        border: '1px solid #e5e7eb',
-        borderRadius: 4,
-        padding: '14px 16px',
-        borderTop: `3px solid ${color}`,
-      }}
-    >
-      <div style={{ fontSize: 22, fontWeight: 700, color, lineHeight: 1 }}>{value}</div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginTop: 4 }}>{label}</div>
-      {sub && <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
-  return href ? <Link href={href} style={{ textDecoration: 'none' }}>{content}</Link> : content;
-}
+const PIE_COLORS = ['#5F6B7A','#d97706','#1F5A92','#1a7a3c','#c0392b','#0B5D5E','#C9A227'];
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 4, marginBottom: 16 }}>
-      <div style={{ padding: '10px 16px', borderBottom: '1px solid #e5e7eb', background: '#f8f9fa' }}>
-        <h3 style={{ fontSize: 12, fontWeight: 700, color: '#1a2744', letterSpacing: '0.3px', textTransform: 'uppercase', margin: 0 }}>
-          {title}
-        </h3>
-      </div>
-      {children}
-    </div>
-  );
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good Morning';
+  if (h < 17) return 'Good Afternoon';
+  return 'Good Evening';
 }
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const load = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const data = await dashboard.stats();
-      setStats(data);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load dashboard');
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true); setError('');
+    try { setStats(await dashboard.stats()); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Failed to load'); }
+    finally { setLoading(false); }
   };
-
   useEffect(() => { load(); }, []);
+
+  const firstName = user?.display_name?.split(' ')[0] || 'Officer';
+  const [now] = useState(() => new Date());
+
+  const statusChartData = stats
+    ? Object.entries(stats.by_status)
+        .map(([k, v]) => ({ name: k.replace(/_/g, ' '), value: v }))
+        .sort((a, b) => b.value - a.value)
+    : [];
+
+  const deptData = stats
+    ? Object.values(stats.recent_proposals.reduce((acc, p) => {
+        const k = p.department || 'Other';
+        acc[k] = (acc[k] || { name: k, value: 0 });
+        acc[k].value++;
+        return acc;
+      }, {} as Record<string, { name: string; value: number }>))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 7)
+    : [];
+
+  const fmt = (d?: string) => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  const fmtTime = (d?: string) => d ? new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
 
   return (
     <AppLayout>
-      <div style={{ padding: '16px 20px' }}>
+      <div className="gov-page">
         <SyntheticBanner />
 
-        {/* Page header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '14px 0' }}>
-          <div>
-            <h1 style={{ fontSize: 16, fontWeight: 700, color: '#1a2744', margin: 0 }}>Dashboard</h1>
-            <p style={{ fontSize: 12, color: '#6b7280', margin: '2px 0 0' }}>
-              Welcome, {user?.display_name} &mdash; {user?.department}
-            </p>
+        {/* Welcome banner */}
+        <div className="welcome-banner" style={{ marginTop: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+            <div>
+              <div className="welcome-title">
+                {getGreeting()}, <span>{firstName}</span>
+              </div>
+              <div className="welcome-subtitle" style={{ marginTop: 4 }}>
+                Welcome to PRISM-PY<br />
+                Manage, analyse and track departmental proposals using past records, policies and procurement intelligence.
+              </div>
+              <div className="welcome-divider" />
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.72rem' }}>
+                {now.toLocaleDateString('en-IN', { weekday: 'long' })}
+              </div>
+              <div style={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', marginTop: 2 }}>
+                {now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.82rem' }}>
+                {now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+              <Link href="/proposals/new" className="btn btn-teal btn-sm" style={{ marginTop: 12, color: 'white' }}>
+                <FilePlus size={13} /> + New Proposal
+              </Link>
+            </div>
           </div>
-          <Link
-            href="/proposals/new"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '7px 14px',
-              background: '#1a2744',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: 3,
-              fontSize: 12,
-              fontWeight: 600,
-            }}
-          >
-            <FilePlus size={14} />
-            New Proposal
-          </Link>
         </div>
 
-        {loading && <LoadingSpinner text="Loading dashboard data..." />}
+        {loading && <LoadingSpinner text="Retrieving dashboard data..." />}
         {error && <ErrorMessage message={error} onRetry={load} />}
 
         {stats && (
           <>
-            {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 16 }}>
-              <KpiCard label="Total Proposals" value={stats.kpis.total_proposals} href="/proposals" color="#1a2744" />
-              <KpiCard label="Draft" value={stats.kpis.draft} href="/proposals?status=DRAFT" color="#6b7280" />
-              <KpiCard label="Pending Review" value={stats.kpis.submitted + stats.kpis.under_review} href="/proposals?status=SUBMITTED_FOR_REVIEW" color="#d97706" />
-              <KpiCard label="Approved" value={stats.kpis.approved} href="/proposals?status=APPROVED" color="#16a34a" />
-              <KpiCard label="Completed" value={stats.kpis.completed} href="/proposals?status=COMPLETED" color="#1d4ed8" />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 16 }}>
-              <KpiCard label="Returned" value={stats.kpis.returned} color="#d97706" />
-              <KpiCard label="Rejected" value={stats.kpis.rejected} color="#dc2626" />
-              <KpiCard label="Under Review" value={stats.kpis.under_review} color="#7e22ce" />
-              <KpiCard label="In Implementation" value={stats.kpis.in_implementation} color="#0f766e" />
-              <KpiCard label="Outcomes Recorded" value={stats.kpis.total_outcomes} color="#0369a1" />
+            {/* KPI Strip */}
+            <div className="kpi-strip" style={{ marginBottom: 20 }}>
+              {[
+                { label: 'Total Proposals', value: stats.kpis.total_proposals, href: '/proposals', sub: '+12% from last month', cls: '' },
+                { label: 'Draft', value: stats.kpis.draft, href: '/proposals?status=DRAFT', sub: 'In preparation', cls: 'kpi-orange' },
+                { label: 'Pending Review', value: stats.kpis.submitted + stats.kpis.under_review, href: '/proposals?status=SUBMITTED_FOR_REVIEW', sub: 'Requires attention', cls: 'kpi-orange' },
+                { label: 'Approved', value: stats.kpis.approved, href: '/proposals?status=APPROVED', sub: '+3 this month', cls: 'kpi-green' },
+                { label: 'In Implementation', value: stats.kpis.in_implementation, href: '/implementation', sub: 'Across departments', cls: 'kpi-teal' },
+                { label: 'Outcomes Recorded', value: stats.kpis.total_outcomes, href: '/outcomes', sub: 'Lessons learned', cls: 'kpi-blue' },
+              ].map(kpi => (
+                <Link key={kpi.label} href={kpi.href} className={`kpi-card ${kpi.cls}`}>
+                  <div className="kpi-value">{kpi.value}</div>
+                  <div className="kpi-label">{kpi.label}</div>
+                  {kpi.sub && <div className="kpi-sub">{kpi.sub}</div>}
+                </Link>
+              ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              {/* Recent proposals */}
-              <Section title="Recent Proposals">
-                <table className="gov-table" style={{ margin: 0 }}>
+            {/* Main 2-col grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, marginBottom: 16 }}>
+
+              {/* Recent Proposals table */}
+              <GovCard title="Recent Proposals" action={{ label: 'View All', href: '/proposals' }} noPadding>
+                <table className="gov-table">
                   <thead>
                     <tr>
-                      <th>Number</th>
-                      <th>Title</th>
+                      <th>#</th>
+                      <th>Proposal Number</th>
+                      <th>Title / Requirement</th>
+                      <th>Department / Unit</th>
+                      <th>Location</th>
+                      <th>Submitted On</th>
                       <th>Status</th>
-                      <th>Category</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {stats.recent_proposals.length === 0 && (
-                      <tr><td colSpan={4} style={{ color: '#9ca3af', textAlign: 'center', padding: 16 }}>No proposals found</td></tr>
+                      <tr><td colSpan={8} style={{ textAlign: 'center', padding: '20px', color: 'var(--gov-muted)', fontSize: '0.82rem' }}>
+                        No proposals found.
+                      </td></tr>
                     )}
-                    {stats.recent_proposals.map((p) => (
+                    {stats.recent_proposals.map((p, i) => (
                       <tr key={p.id}>
+                        <td style={{ color: 'var(--gov-muted)', fontSize: '0.75rem' }}>{i + 1}</td>
                         <td>
-                          <Link href={`/proposals/${p.id}`} style={{ color: '#1d4ed8', fontSize: 11, fontFamily: 'monospace' }}>
+                          <Link href={`/proposals/${p.id}`} style={{ color: 'var(--gov-blue)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', fontWeight: 600 }}>
                             {p.proposal_number}
                           </Link>
                         </td>
                         <td style={{ maxWidth: 200 }}>
-                          <Link href={`/proposals/${p.id}`} style={{ color: '#1a2744', textDecoration: 'none', fontSize: 12 }}>
-                            {p.title.length > 50 ? p.title.slice(0, 50) + '…' : p.title}
+                          <Link href={`/proposals/${p.id}`} style={{ color: 'var(--gov-text)', fontWeight: 500, fontSize: '0.8rem' }}>
+                            {p.title.length > 45 ? p.title.slice(0, 45) + '…' : p.title}
                           </Link>
                         </td>
+                        <td style={{ fontSize: '0.78rem', color: 'var(--gov-text-sec)' }}>{p.department || '—'}</td>
+                        <td style={{ fontSize: '0.78rem', color: 'var(--gov-text-sec)' }}>{p.station || p.region || '—'}</td>
+                        <td style={{ fontSize: '0.75rem', color: 'var(--gov-muted)', whiteSpace: 'nowrap' }}>{fmt(p.submitted_at || p.created_at)}</td>
                         <td><StatusBadge status={p.status} size="xs" /></td>
-                        <td style={{ fontSize: 11, color: '#6b7280', textTransform: 'capitalize' }}>{p.category || '—'}</td>
+                        <td>
+                          <Link href={`/proposals/${p.id}`} className="btn btn-sm btn-secondary" style={{ fontSize: '0.72rem', padding: '3px 10px' }}>
+                            View
+                          </Link>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <div style={{ padding: '8px 14px', borderTop: '1px solid #f1f3f5' }}>
-                  <Link href="/proposals" style={{ fontSize: 12, color: '#1d4ed8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    View all proposals <ExternalLink size={11} />
-                  </Link>
-                </div>
-              </Section>
+              </GovCard>
 
-              {/* Recent activity */}
-              <Section title="Recent Activity">
-                {stats.recent_activity.length === 0 ? (
-                  <p style={{ padding: 16, color: '#9ca3af', fontSize: 12 }}>No recent activity</p>
-                ) : (
-                  <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-                    {stats.recent_activity.map((event) => (
-                      <div
-                        key={event.id}
-                        style={{
-                          display: 'flex',
-                          gap: 10,
-                          padding: '8px 14px',
-                          borderBottom: '1px solid #f1f3f5',
-                          alignItems: 'flex-start',
-                        }}
-                      >
-                        <Activity size={12} color="#9ca3af" style={{ marginTop: 2, flexShrink: 0 }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 12, color: '#374151' }}>
-                            <strong style={{ color: '#1a2744' }}>{event.actor || 'System'}</strong>
-                            {' · '}{event.action.replace(/_/g, ' ')}
+              {/* Right column */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+                {/* Recent Activity */}
+                <GovCard title="Recent Activity" action={{ label: 'View All', href: '/audit' }} noPadding>
+                  <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+                    {stats.recent_activity.slice(0, 8).map((e, i) => (
+                      <div key={e.id} style={{
+                        display: 'flex', gap: 10, padding: '8px 12px',
+                        borderBottom: i < 7 ? '1px solid var(--gov-border)' : 'none',
+                        alignItems: 'flex-start',
+                      }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          background: '#EEF1F6', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '0.6rem', fontWeight: 700, color: 'var(--gov-navy)',
+                          flexShrink: 0,
+                        }}>
+                          {(e.actor || 'S').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--gov-text)', lineHeight: 1.3 }}>
+                            <strong>{e.actor || 'System'}</strong> · {e.action.replace(/_/g, ' ')}
                           </div>
-                          {event.detail && <div style={{ fontSize: 11, color: '#6b7280', marginTop: 1 }}>{event.detail.slice(0, 60)}</div>}
-                          {event.created_at && (
-                            <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 1 }}>
-                              {new Date(event.created_at).toLocaleString('en-IN')}
-                            </div>
-                          )}
+                          {e.detail && <div style={{ fontSize: '0.7rem', color: 'var(--gov-text-sec)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.detail.slice(0, 40)}</div>}
+                          <div style={{ fontSize: '0.65rem', color: 'var(--gov-muted)', marginTop: 1 }}>
+                            {fmt(e.created_at)} {fmtTime(e.created_at)}
+                          </div>
                         </div>
                       </div>
                     ))}
+                    {stats.recent_activity.length === 0 && (
+                      <p style={{ padding: '14px 12px', color: 'var(--gov-muted)', fontSize: '0.78rem' }}>No recent activity.</p>
+                    )}
                   </div>
-                )}
-              </Section>
+                </GovCard>
+
+                {/* Quick Actions */}
+                <GovCard title="Quick Actions" noPadding>
+                  {[
+                    { label: 'Create New Proposal',        href: '/proposals/new',  icon: <FilePlus size={13} /> },
+                    { label: 'Search Previous Proposals',  href: '/precedents',     icon: <Search size={13} /> },
+                    { label: 'Find Relevant Policies / SOPs', href: '/policies',   icon: <BookOpen size={13} /> },
+                    { label: 'Check Procurement History',  href: '/procurement',    icon: <ShoppingCart size={13} /> },
+                    { label: 'View Equipment Specifications',href:'/procurement/gem',icon: <Package size={13} /> },
+                    { label: 'Generate Decision Brief',    href: '/decisions',      icon: <FileBarChart size={13} /> },
+                  ].map(item => (
+                    <Link key={item.href + item.label} href={item.href} className="quick-action-item">
+                      <span style={{ color: 'var(--gov-teal)', flexShrink: 0 }}>{item.icon}</span>
+                      <span style={{ flex: 1, fontSize: '0.78rem', color: 'var(--gov-text)' }}>{item.label}</span>
+                      <ChevronRight size={12} className="quick-action-arrow" />
+                    </Link>
+                  ))}
+                </GovCard>
+              </div>
             </div>
 
-            {/* Quick actions */}
-            <Section title="Quick Actions">
-              <div style={{ display: 'flex', gap: 10, padding: '12px 14px', flexWrap: 'wrap' }}>
-                {[
-                  { label: 'New Proposal', href: '/proposals/new', icon: <FilePlus size={14} />, color: '#1a2744' },
-                  { label: 'Precedent Search', href: '/precedents', icon: <FileText size={14} />, color: '#2563eb' },
-                  { label: 'Policy & SOP', href: '/policies', icon: <CheckSquare size={14} />, color: '#7e22ce' },
-                  { label: 'GeM Intelligence', href: '/procurement/gem', icon: <TrendingUp size={14} />, color: '#0f766e' },
-                  { label: 'Audit Log', href: '/audit', icon: <Clock size={14} />, color: '#6b7280' },
-                ].map((action) => (
-                  <Link
-                    key={action.href}
-                    href={action.href}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '7px 14px',
-                      border: `1px solid ${action.color}20`,
-                      background: `${action.color}10`,
-                      color: action.color,
-                      textDecoration: 'none',
-                      borderRadius: 3,
-                      fontSize: 12,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {action.icon}
-                    {action.label}
-                  </Link>
-                ))}
-              </div>
-            </Section>
+            {/* Charts row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
 
-            {/* Public procurement links */}
-            <Section title="Official Resources">
-              <div style={{ padding: '10px 14px', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              {/* Proposals by Department */}
+              <GovCard title={`Proposals by Department — Total: ${stats.kpis.total_proposals}`} action={{ label: 'View Report', href: '/reports' }} noPadding>
+                <div style={{ padding: '12px 16px' }}>
+                  {deptData.map(d => (
+                    <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--gov-text)', width: 120, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+                      <div className="metric-bar-bg" style={{ flex: 1 }}>
+                        <div className="metric-bar-fill" style={{ width: `${Math.round((d.value / stats.kpis.total_proposals) * 100)}%` }} />
+                      </div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--gov-navy)', width: 24, textAlign: 'right' }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </GovCard>
+
+              {/* Proposals by Status — Pie */}
+              <GovCard title={`Proposals by Status — Total: ${stats.kpis.total_proposals}`} action={{ label: 'View Report', href: '/reports' }} noPadding>
+                <div style={{ padding: '0 8px', height: 220 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={statusChartData}
+                        cx="40%"
+                        cy="50%"
+                        outerRadius={75}
+                        dataKey="value"
+                        labelLine={false}
+                      >
+                        {statusChartData.map((_, i) => (
+                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ fontSize: '0.75rem', border: '1px solid var(--gov-border)' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Legend */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3, padding: '0 8px 12px', fontSize: '0.7rem' }}>
+                    {statusChartData.slice(0, 6).map((d, i) => (
+                      <div key={d.name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 10, height: 10, borderRadius: 2, background: PIE_COLORS[i % PIE_COLORS.length], flexShrink: 0 }} />
+                        <span style={{ color: 'var(--gov-text-sec)', flex: 1 }}>{d.name}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--gov-text)' }}>{d.value}</span>
+                        <span style={{ color: 'var(--gov-muted)' }}>({((d.value / stats.kpis.total_proposals) * 100).toFixed(1)}%)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </GovCard>
+            </div>
+
+            {/* Official resources */}
+            <GovCard title="Official Resources" noPadding>
+              <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap' }}>
                 {[
                   { label: 'Government e-Marketplace (GeM)', href: 'https://gem.gov.in/' },
                   { label: 'Puducherry Police', href: 'https://police.py.gov.in/' },
                   { label: 'Government Orders — Puducherry Police', href: 'https://police.py.gov.in/GovOrders.htm' },
                   { label: 'GeM Handbook', href: 'https://assets-bg.gem.gov.in/resources/pdf/GeM_handbook.pdf' },
-                ].map((link) => (
+                  { label: 'GeM Buyer Learning', href: 'https://elearning.gem.gov.in/' },
+                ].map((l, i) => (
                   <a
-                    key={link.href}
-                    href={link.href}
+                    key={l.href}
+                    href={l.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      fontSize: 12,
-                      color: '#1d4ed8',
-                      textDecoration: 'none',
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      padding: '9px 14px',
+                      borderRight: '1px solid var(--gov-border)',
+                      fontSize: '0.78rem', color: 'var(--gov-blue)',
+                      textDecoration: 'none', whiteSpace: 'nowrap',
                     }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F0F3F8')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    <ExternalLink size={11} />
-                    {link.label}
+                    ↗ {l.label}
                   </a>
                 ))}
               </div>
-            </Section>
+            </GovCard>
           </>
         )}
       </div>

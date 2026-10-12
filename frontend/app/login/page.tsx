@@ -1,24 +1,26 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
+import { Eye, EyeOff, AlertCircle, Lock } from 'lucide-react';
 import { auth } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 const DEMO_ACCOUNTS = [
-  { username: 'sp_puducherry', password: 'demo123', role: 'Approving Authority', desc: 'Can approve/reject proposals' },
-  { username: 'si_central', password: 'demo123', role: 'Initiator', desc: 'Can create and submit proposals' },
-  { username: 'dsp_north', password: 'demo123', role: 'Reviewer', desc: 'Can review and return proposals' },
-  { username: 'procurement_officer', password: 'demo123', role: 'Procurement Officer', desc: 'GeM & procurement intelligence' },
-  { username: 'admin', password: 'admin123', role: 'Admin', desc: 'Full access' },
+  { username: 'sp_puducherry',        password: 'demo123', role: 'Approving Authority', badge: 'badge-approved' },
+  { username: 'dsp_north',            password: 'demo123', role: 'Reviewer',             badge: 'badge-review'   },
+  { username: 'si_central',           password: 'demo123', role: 'Initiator',            badge: 'badge-impl'     },
+  { username: 'procurement_officer',  password: 'demo123', role: 'Procurement Officer',  badge: 'badge-pending'  },
+  { username: 'implementation_officer',password:'demo123', role: 'Implementation Officer',badge:'badge-normal'   },
+  { username: 'auditor',              password: 'demo123', role: 'Auditor',              badge: 'badge-draft'    },
+  { username: 'admin',                password: 'admin123',role: 'System Admin',         badge: 'badge-high'     },
 ];
 
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('sp_puducherry');
+  const [password, setPassword] = useState('demo123');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,7 +31,6 @@ export default function LoginPage() {
     setError('');
     try {
       const res = await auth.login(username, password);
-      // Fetch permissions
       const meRes = await fetch('http://localhost:5001/api/v1/auth/me', {
         headers: { Authorization: `Bearer ${res.token}` },
       });
@@ -37,249 +38,212 @@ export default function LoginPage() {
       login(res.token, { ...res.user, permissions: me.permissions || [] });
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : 'Invalid credentials');
     } finally {
       setLoading(false);
     }
   };
 
-  const quickLogin = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-  };
-
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#f8f9fa',
+    <div style={{
+      minHeight: '100vh',
+      background: '#F5F7FA',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Top institutional header bar */}
+      <div style={{
+        background: 'var(--gov-navy)',
+        borderBottom: '3px solid var(--gov-gold)',
+        padding: '12px 24px',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-      }}
-    >
-      {/* Header identity */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          borderRadius: '4px 4px 0 0',
-          overflow: 'hidden',
-          borderTop: '1px solid #d1d5db',
-          borderLeft: '1px solid #d1d5db',
-          borderRight: '1px solid #d1d5db',
-          borderBottom: '3px solid #d4af37',
-        }}
-      >
-        {/* Top navy strip: crest + text */}
-        <div
-          style={{
-            background: '#1a2744',
-            padding: '14px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 14,
-          }}
-        >
-          <Image
-            src="/prism-logo-icon.png"
-            alt="Puducherry Police PRISM-PY"
-            width={50}
-            height={50}
-            style={{ borderRadius: '50%', border: '2px solid #d4af37', display: 'block', flexShrink: 0 }}
-            priority
-          />
-          <div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontSize: 22, fontWeight: 900, color: 'white', letterSpacing: '-0.5px', fontFamily: 'Georgia, serif' }}>PRISM</span>
-              <span style={{ fontSize: 22, fontWeight: 900, color: '#d4af37', letterSpacing: '-0.5px', fontFamily: 'Georgia, serif' }}>-PY</span>
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', letterSpacing: '0.8px', textTransform: 'uppercase', marginTop: 2 }}>
-              Police Proposal Retrieval, Intelligence &amp; Strategy Matrix
-            </div>
-            <div style={{ fontSize: 8, color: '#d4af37', letterSpacing: '1px', textTransform: 'uppercase', marginTop: 1 }}>
-              Puducherry Police — Intelligent Proposal Management System
-            </div>
+        gap: 14,
+      }}>
+        <Image src="/prism-logo-icon.png" alt="Puducherry Police" width={44} height={44}
+          style={{ borderRadius: '50%', border: '2px solid var(--gov-gold)' }} priority />
+        <div>
+          <div style={{ color: 'white', fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.01em' }}>PUDUCHERRY POLICE</div>
+          <div style={{ color: 'var(--gov-gold-light)', fontSize: '0.65rem', fontWeight: 500 }}>
+            PRISM-PY — Police Proposal Retrieval, Intelligence &amp; Strategy Matrix
           </div>
         </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <span style={{ background: '#fff8e1', border: '1px solid #e6c84a', borderRadius: 3, padding: '2px 9px', fontSize: '0.65rem', fontWeight: 700, color: '#7a5500' }}>
+            SYNTHETIC DEMO
+          </span>
+        </div>
+      </div>
 
-        {/* White strip: banner image on white background where it's designed to sit */}
-        <div
-          style={{
-            background: 'white',
-            padding: '10px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderBottom: '1px solid #e5e7eb',
-          }}
-        >
+      {/* Main login area */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 16px',
+        gap: 32,
+        flexWrap: 'wrap',
+      }}>
+
+        {/* Left: banner image visible on white */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, maxWidth: 380 }}>
           <Image
             src="/prism-logo-banner.png"
             alt="PRISM-PY — Puducherry Police"
-            height={52}
-            width={0}
-            sizes="440px"
-            style={{ width: 'auto', height: 52, objectFit: 'contain' }}
+            width={380}
+            height={0}
+            sizes="380px"
+            style={{ width: '100%', height: 'auto', maxWidth: 380 }}
             priority
           />
+          <div style={{
+            background: 'white', border: '1px solid var(--gov-border)', borderRadius: 'var(--r-md)',
+            padding: '14px 16px', fontSize: '0.78rem', color: 'var(--gov-text-sec)', lineHeight: 1.6,
+          }}>
+            <strong style={{ color: 'var(--gov-navy)' }}>PRISM-PY</strong> provides intelligent decision support for
+            departmental proposal management using historical precedents, policy intelligence and procurement data.<br /><br />
+            <em style={{ color: 'var(--gov-muted)', fontSize: '0.72rem' }}>
+              Demonstration system — Synthetic data only. Not an official government application.
+            </em>
+          </div>
         </div>
-      </div>
 
-      {/* Login form */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 480,
+        {/* Right: login card */}
+        <div style={{
           background: 'white',
-          border: '1px solid #d1d5db',
-          borderTop: 'none',
-          borderRadius: '0 0 4px 4px',
-          padding: '24px',
-        }}
-      >
-        <h2 style={{ fontSize: 15, fontWeight: 600, color: '#1a2744', marginBottom: 20 }}>
-          Officer Sign In
-        </h2>
-
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: 14 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 }}>
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoComplete="username"
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: 3,
-                fontSize: 13,
-                outline: 'none',
-              }}
-              placeholder="Enter your username"
-            />
-          </div>
-          <div style={{ marginBottom: 18, position: 'relative' }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 }}>
-              Password
-            </label>
-            <input
-              type={showPw ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              style={{
-                width: '100%',
-                padding: '8px 36px 8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: 3,
-                fontSize: 13,
-                outline: 'none',
-              }}
-              placeholder="Enter your password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPw((s) => !s)}
-              style={{
-                position: 'absolute',
-                right: 10,
-                top: 28,
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#9ca3af',
-              }}
-            >
-              {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
-            </button>
-          </div>
-
-          {error && (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 3 }}>
-              <AlertCircle size={14} color="#dc2626" />
-              <span style={{ fontSize: 12, color: '#b91c1c' }}>{error}</span>
+          border: '1px solid var(--gov-border)',
+          borderRadius: 'var(--r-lg)',
+          width: '100%',
+          maxWidth: 420,
+          overflow: 'hidden',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        }}>
+          {/* Card header */}
+          <div style={{
+            background: 'var(--gov-navy)',
+            padding: '16px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            borderBottom: '2px solid var(--gov-gold)',
+          }}>
+            <Lock size={16} color="var(--gov-gold-light)" />
+            <div>
+              <div style={{ color: 'white', fontWeight: 700, fontSize: '0.9rem' }}>Officer Sign In</div>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.7rem' }}>Authorised personnel only</div>
             </div>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '9px',
-              background: loading ? '#9ca3af' : '#1a2744',
-              color: 'white',
-              border: 'none',
-              borderRadius: 3,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
+          <form onSubmit={handleLogin} style={{ padding: '20px' }}>
+            <div style={{ marginBottom: 14 }}>
+              <label className="form-label" htmlFor="login-username">
+                Username <span className="req">*</span>
+              </label>
+              <input
+                id="login-username"
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                className="gov-input"
+                placeholder="Enter your username"
+              />
+            </div>
 
-        {/* Demo accounts */}
-        <div style={{ marginTop: 24, borderTop: '1px solid #e5e7eb', paddingTop: 16 }}>
-          <p style={{ fontSize: 11, color: '#6b7280', marginBottom: 10, fontWeight: 600 }}>
-            DEMO ACCOUNTS (Synthetic Data Only)
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.username}
-                type="button"
-                onClick={() => quickLogin(acc.username, acc.password)}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '6px 10px',
-                  background: '#f8f9fa',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 3,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  gap: 8,
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#1a2744' }}>{acc.username}</span>
-                  <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 8 }}>{acc.desc}</span>
-                </div>
-                <span
+            <div style={{ marginBottom: 18, position: 'relative' }}>
+              <label className="form-label" htmlFor="login-password">
+                Password <span className="req">*</span>
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="login-password"
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="gov-input"
+                  style={{ paddingRight: 36 }}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(s => !s)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gov-muted)' }}
+                >
+                  {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, padding: '8px 12px', background: 'var(--gov-danger-bg)', border: '1px solid #f5c6c2', borderRadius: 'var(--r-md)', fontSize: '0.8rem', color: 'var(--gov-danger)' }}>
+                <AlertCircle size={13} />
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary"
+              style={{ width: '100%', justifyContent: 'center', padding: '9px' }}
+            >
+              {loading ? 'Signing In...' : 'Sign In'}
+            </button>
+          </form>
+
+          {/* Demo accounts */}
+          <div style={{ borderTop: '1px solid var(--gov-border)', padding: '14px 20px 18px' }}>
+            <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--gov-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Demo Accounts
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {DEMO_ACCOUNTS.map(acc => (
+                <button
+                  key={acc.username}
+                  type="button"
+                  onClick={() => { setUsername(acc.username); setPassword(acc.password); }}
                   style={{
-                    fontSize: 10,
-                    background: '#e8edf8',
-                    color: '#1a2744',
-                    padding: '1px 6px',
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    whiteSpace: 'nowrap',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '5px 10px',
+                    background: username === acc.username ? '#EEF1F6' : 'transparent',
+                    border: '1px solid var(--gov-border)',
+                    borderRadius: 'var(--r-sm)',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-body)',
                   }}
                 >
-                  {acc.role}
-                </span>
-              </button>
-            ))}
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--gov-navy)', fontFamily: 'var(--font-mono)' }}>{acc.username}</span>
+                  </div>
+                  <span className={`badge ${acc.badge}`} style={{ fontSize: '0.62rem' }}>{acc.role}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      <p style={{ marginTop: 16, fontSize: 11, color: '#9ca3af', textAlign: 'center' }}>
-        PRISM-PY — Decision Support System. Not an official government system.<br />
-        All data is synthetic and for demonstration purposes only.
-      </p>
+      {/* Bottom footer */}
+      <div style={{
+        background: 'var(--gov-navy-dark)',
+        borderTop: '2px solid var(--gov-gold)',
+        padding: '10px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 8,
+        fontSize: '0.7rem',
+        color: 'rgba(255,255,255,0.6)',
+      }}>
+        <span>Government of Puducherry — Puducherry Police</span>
+        <span style={{ color: '#fcd34d', fontWeight: 600 }}>SYNTHETIC DEMO — Not an Official Government System</span>
+      </div>
     </div>
   );
 }

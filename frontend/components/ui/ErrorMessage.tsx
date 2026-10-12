@@ -1,14 +1,28 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function ErrorMessage({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded text-sm">
-      <AlertCircle size={16} className="text-red-600 mt-0.5 shrink-0" />
-      <div className="flex-1">
-        <p className="text-red-800">{message}</p>
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', gap: 10,
+      padding: '12px 14px',
+      background: 'var(--gov-danger-bg)',
+      border: '1px solid #f5c6c2',
+      borderLeft: '3px solid var(--gov-danger)',
+      borderRadius: 'var(--r-md)',
+      fontSize: '0.82rem',
+      color: 'var(--gov-danger)',
+    }}>
+      <AlertCircle size={15} style={{ marginTop: 1, flexShrink: 0 }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 600 }}>Error</div>
+        <div style={{ marginTop: 2, color: '#a93226' }}>{message}</div>
         {onRetry && (
-          <button onClick={onRetry} className="mt-2 text-red-700 underline text-xs">
-            Retry
+          <button
+            onClick={onRetry}
+            className="btn btn-sm btn-secondary"
+            style={{ marginTop: 8 }}
+          >
+            <RefreshCw size={12} /> Retry
           </button>
         )}
       </div>

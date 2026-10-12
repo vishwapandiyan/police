@@ -3,174 +3,104 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
-  LayoutDashboard, FilePlus, FileText, Files, Search, BookOpen,
-  ShoppingCart, ShoppingBag, FileBarChart, Activity, CheckSquare,
-  Target, Archive, Users, Settings, ChevronDown, ChevronRight,
+  FilePlus, Files, User, Search, BookOpen, ShoppingCart,
+  Package, FileBarChart, BarChart2, AlertTriangle, Wrench,
+  Target, Database, BarChart, Activity, Users, Settings, Home,
 } from 'lucide-react';
-import { useState } from 'react';
 
 interface NavItem {
   label: string;
-  href?: string;
-  icon?: React.ReactNode;
-  children?: NavItem[];
+  href: string;
+  icon: React.ReactNode;
 }
 
-const NAV: NavItem[] = [
-  { label: 'DASHBOARD', href: '/dashboard', icon: <LayoutDashboard size={15} /> },
+const SECTIONS: { heading: string; items: NavItem[] }[] = [
   {
-    label: 'PROPOSALS',
-    icon: <FileText size={15} />,
-    children: [
-      { label: 'New Proposal', href: '/proposals/new', icon: <FilePlus size={13} /> },
-      { label: 'All Proposals', href: '/proposals', icon: <Files size={13} /> },
+    heading: 'PROPOSALS',
+    items: [
+      { label: 'New Proposal',    href: '/proposals/new',   icon: <FilePlus size={13} /> },
+      { label: 'My Proposals',    href: '/proposals?mine=1',icon: <User size={13} /> },
+      { label: 'All Proposals',   href: '/proposals',       icon: <Files size={13} /> },
     ],
   },
   {
-    label: 'INTELLIGENCE',
-    icon: <Search size={15} />,
-    children: [
-      { label: 'Precedent Search', href: '/precedents', icon: <Search size={13} /> },
-      { label: 'Policy & SOP', href: '/policies', icon: <BookOpen size={13} /> },
-      { label: 'GeM Intelligence', href: '/procurement/gem', icon: <ShoppingBag size={13} /> },
-      { label: 'Procurement', href: '/procurement', icon: <ShoppingCart size={13} /> },
+    heading: 'INTELLIGENCE',
+    items: [
+      { label: 'Precedent Search', href: '/precedents',       icon: <Search size={13} /> },
+      { label: 'Policy & SOP',     href: '/policies',         icon: <BookOpen size={13} /> },
+      { label: 'Procurement',      href: '/procurement',      icon: <ShoppingCart size={13} /> },
+      { label: 'Equipment Library',href: '/procurement/gem',  icon: <Package size={13} /> },
     ],
   },
   {
-    label: 'DECISIONS',
-    icon: <CheckSquare size={15} />,
-    children: [
-      { label: 'Decision Briefs', href: '/decisions', icon: <FileBarChart size={13} /> },
-      { label: 'Cost Analysis', href: '/cost-analysis', icon: <Activity size={13} /> },
+    heading: 'ANALYSIS',
+    items: [
+      { label: 'Decision Briefs',  href: '/decisions',      icon: <FileBarChart size={13} /> },
+      { label: 'Cost Analysis',    href: '/cost-analysis',  icon: <BarChart2 size={13} /> },
+      { label: 'Risk & Compliance',href: '/precedents',     icon: <AlertTriangle size={13} /> },
     ],
   },
   {
-    label: 'IMPLEMENTATION',
-    icon: <Target size={15} />,
-    children: [
-      { label: 'Tracking', href: '/implementation', icon: <CheckSquare size={13} /> },
-      { label: 'Outcomes', href: '/outcomes', icon: <Target size={13} /> },
-      { label: 'Institutional Memory', href: '/memory', icon: <Archive size={13} /> },
+    heading: 'IMPLEMENTATION',
+    items: [
+      { label: 'Implementation Tracking', href: '/implementation', icon: <Wrench size={13} /> },
+      { label: 'Outcomes & Lessons',      href: '/outcomes',        icon: <Target size={13} /> },
     ],
   },
   {
-    label: 'ADMINISTRATION',
-    icon: <Settings size={15} />,
-    children: [
-      { label: 'Reports', href: '/reports', icon: <FileBarChart size={13} /> },
-      { label: 'Audit Logs', href: '/audit', icon: <Activity size={13} /> },
-      { label: 'Users', href: '/administration', icon: <Users size={13} /> },
+    heading: 'KNOWLEDGE',
+    items: [
+      { label: 'Knowledge Base',    href: '/memory',   icon: <Database size={13} /> },
+      { label: 'Reports & Analytics',href: '/reports',  icon: <BarChart size={13} /> },
+    ],
+  },
+  {
+    heading: 'ADMINISTRATION',
+    items: [
+      { label: 'Audit Logs',      href: '/audit',           icon: <Activity size={13} /> },
+      { label: 'User Management', href: '/administration',  icon: <Users size={13} /> },
+      { label: 'Settings',        href: '/administration',  icon: <Settings size={13} /> },
     ],
   },
 ];
 
-function NavSection({ item, depth = 0 }: { item: NavItem; depth?: number }) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(
-    () => item.children?.some((c) => pathname.startsWith(c.href || '')) ?? depth === 0
-  );
-
-  if (item.href) {
-    const active = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
-    return (
-      <Link
-        href={item.href}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: depth === 0 ? '8px 16px' : '5px 16px 5px 36px',
-          textDecoration: 'none',
-          color: active ? '#1a2744' : '#4b5563',
-          background: active ? '#e8edf8' : 'transparent',
-          borderLeft: active ? '3px solid #1a2744' : '3px solid transparent',
-          fontSize: depth === 0 ? 12 : 12,
-          fontWeight: active ? 600 : 400,
-          borderRadius: '0 3px 3px 0',
-          transition: 'background 0.1s',
-        }}
-      >
-        {item.icon}
-        {item.label}
-      </Link>
-    );
-  }
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-          padding: '7px 16px',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: '#374151',
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: '0.8px',
-          textAlign: 'left',
-          gap: 6,
-        }}
-      >
-        {item.icon && <span style={{ color: '#6b7280' }}>{item.icon}</span>}
-        <span style={{ flex: 1 }}>{item.label}</span>
-        {open ? <ChevronDown size={11} color="#9ca3af" /> : <ChevronRight size={11} color="#9ca3af" />}
-      </button>
-      {open && item.children && (
-        <div>
-          {item.children.map((child) => (
-            <NavSection key={child.href || child.label} item={child} depth={1} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Sidebar() {
-  return (
-    <aside
-      style={{
-        width: 220,
-        background: '#f8f9fa',
-        borderRight: '1px solid #e5e7eb',
-        overflowY: 'auto',
-        flexShrink: 0,
-        paddingTop: 8,
-        paddingBottom: 24,
-      }}
-    >
-      {NAV.map((item) => (
-        <NavSection key={item.label} item={item} />
-      ))}
-      <div
-        style={{
-          margin: '16px',
-          padding: '8px 10px',
-          background: '#fef3c7',
-          border: '1px solid #fde68a',
-          borderRadius: 3,
-          fontSize: 10,
-          color: '#78350f',
-          lineHeight: 1.4,
-        }}
-      >
-        Synthetic demo data only. Not an official government system.
-      </div>
+  const pathname = usePathname();
 
-      {/* Crest at the bottom of sidebar */}
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 16px' }}>
-        <Image
-          src="/prism-logo-icon.png"
-          alt="Puducherry Police PRISM-PY"
-          width={52}
-          height={52}
-          style={{ borderRadius: '50%', border: '2px solid #e5e7eb', opacity: 0.7 }}
-        />
+  const isActive = (href: string) =>
+    href === '/proposals'
+      ? pathname === '/proposals' || (pathname.startsWith('/proposals/') && !pathname.includes('/new'))
+      : pathname === href || pathname.startsWith(href + '/') || pathname.startsWith(href + '?');
+
+  return (
+    <aside className="sidebar" aria-label="Sidebar navigation">
+      {SECTIONS.map(sec => (
+        <div key={sec.heading}>
+          <div className="sidebar-section-label">{sec.heading}</div>
+          {sec.items.map(item => (
+            <Link
+              key={item.href + item.label}
+              href={item.href}
+              className={`sidebar-item${isActive(item.href) ? ' active' : ''}`}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              <span style={{ color: isActive(item.href) ? 'var(--gov-navy)' : 'var(--gov-muted)', flexShrink: 0 }}>
+                {item.icon}
+              </span>
+              {item.label}
+            </Link>
+          ))}
+          <div className="sidebar-divider" />
+        </div>
+      ))}
+
+      {/* Crest at bottom */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 14px 4px', gap: 6 }}>
+        <Image src="/prism-logo-icon.png" alt="Puducherry Police" width={44} height={44}
+          style={{ borderRadius: '50%', border: '1px solid var(--gov-border)', opacity: 0.65 }} />
+        <div style={{ fontSize: '0.6rem', color: 'var(--gov-muted)', textAlign: 'center', lineHeight: 1.4 }}>
+          PUDUCHERRY<br/>THE PEARL OF THE EAST
+        </div>
       </div>
     </aside>
   );

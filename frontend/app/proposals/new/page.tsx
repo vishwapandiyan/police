@@ -4,328 +4,332 @@ import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import SyntheticBanner from '@/components/ui/SyntheticBanner';
+import PageHeader from '@/components/ui/PageHeader';
 import { proposals } from '@/lib/api';
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-const STEPS = [
-  { num: 1 as Step, label: 'Basic Information' },
-  { num: 2 as Step, label: 'Requirement' },
-  { num: 3 as Step, label: 'Budget' },
-  { num: 4 as Step, label: 'Technical' },
-  { num: 5 as Step, label: 'Documents' },
-  { num: 6 as Step, label: 'Review & Submit' },
+const STEPS: { num: Step; label: string; desc: string }[] = [
+  { num: 1, label: '1. Identification',    desc: 'Basic proposal details' },
+  { num: 2, label: '2. Requirement',       desc: 'What is needed' },
+  { num: 3, label: '3. Specification',     desc: 'Technical requirements' },
+  { num: 4, label: '4. Justification',     desc: 'Why it is required' },
+  { num: 5, label: '5. Financial',         desc: 'Budget information' },
+  { num: 6, label: '6. Documents',         desc: 'Supporting documents' },
+  { num: 7, label: '7. Review',            desc: 'Check and submit' },
 ];
 
 const CATEGORIES = ['technology', 'infrastructure', 'procurement', 'training', 'vehicles', 'communication', 'operational', 'administrative', 'welfare', 'other'];
-const REGIONS = ['Puducherry', 'Karaikal', 'Mahe', 'Yanam'];
-const PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
+const REGIONS    = ['Puducherry', 'Karaikal', 'Mahe', 'Yanam'];
 
-interface FormData {
-  title: string;
-  description: string;
-  department: string;
-  unit: string;
-  category: string;
-  priority: string;
-  region: string;
-  station: string;
-  expected_completion_date: string;
-  purpose: string;
-  problem_statement: string;
-  expected_outcome: string;
-  quantity: string;
-  unit_of_measure: string;
-  estimated_cost: string;
-  cost_basis: string;
-  funding_source: string;
-  technology: string;
-  specification: string;
+interface Form {
+  title: string; department: string; unit: string; category: string;
+  priority: string; region: string; station: string; expected_completion_date: string;
+  purpose: string; problem_statement: string; expected_outcome: string;
+  quantity: string; unit_of_measure: string;
+  technology: string; specification: string;
+  justification: string; operational_need: string; expected_benefit: string;
+  estimated_cost: string; cost_basis: string; funding_source: string;
 }
 
-function Field({ label, required, children, note }: { label: string; required?: boolean; children: React.ReactNode; note?: string }) {
+const INIT: Form = {
+  title: '', department: '', unit: '', category: 'technology',
+  priority: 'NORMAL', region: 'Puducherry', station: '', expected_completion_date: '',
+  purpose: '', problem_statement: '', expected_outcome: '',
+  quantity: '', unit_of_measure: '',
+  technology: '', specification: '',
+  justification: '', operational_need: '', expected_benefit: '',
+  estimated_cost: '', cost_basis: '', funding_source: '',
+};
+
+function FormSection({ num, title, children }: { num: string; title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>
-        {label} {required && <span style={{ color: '#dc2626' }}>*</span>}
-      </label>
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, paddingBottom: 8, borderBottom: '2px solid var(--gov-border)' }}>
+        <span style={{ background: 'var(--gov-navy)', color: 'white', width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 700, flexShrink: 0 }}>
+          {num}
+        </span>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--gov-navy)', margin: 0 }}>{title}</h3>
+      </div>
       {children}
-      {note && <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 3 }}>{note}</p>}
     </div>
   );
 }
 
-const inp = {
-  width: '100%',
-  padding: '7px 10px',
-  border: '1px solid #d1d5db',
-  borderRadius: 3,
-  fontSize: 13,
-  outline: 'none',
-  background: 'white',
-} as const;
-
-const textarea = { ...inp, minHeight: 80, resize: 'vertical' as const };
-const sel = { ...inp };
+function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <label className="form-label">
+        {label}{required && <span className="req"> *</span>}
+      </label>
+      {children}
+      {hint && <p className="form-hint">{hint}</p>}
+    </div>
+  );
+}
 
 export default function NewProposalPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState<FormData>({
-    title: '', description: '', department: '', unit: '', category: 'technology',
-    priority: 'NORMAL', region: 'Puducherry', station: '', expected_completion_date: '',
-    purpose: '', problem_statement: '', expected_outcome: '', quantity: '', unit_of_measure: '',
-    estimated_cost: '', cost_basis: '', funding_source: '',
-    technology: '', specification: '',
-  });
+  const [form, setForm] = useState<Form>(INIT);
 
-  const set = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-    setForm((f) => ({ ...f, [field]: e.target.value }));
+  const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleSubmit = async (action: 'draft' | 'submit') => {
-    setSubmitting(true);
-    setError('');
+  const canNext = () => {
+    if (step === 1) return !!(form.title && form.department && form.category);
+    if (step === 2) return !!(form.purpose && form.problem_statement);
+    return true;
+  };
+
+  const handleAction = async (action: 'draft' | 'submit') => {
+    setSubmitting(true); setError('');
     try {
-      const payload: Record<string, unknown> = { ...form };
-      if (form.estimated_cost) payload.estimated_cost = parseFloat(form.estimated_cost);
-      const res = await proposals.create(payload);
-      const id = res.proposal.id;
-      if (action === 'submit') {
-        await proposals.submit(id, 'Submitted via proposal wizard');
-      }
-      router.push(`/proposals/${id}`);
+      const body: Record<string, unknown> = {
+        title: form.title, description: form.purpose, department: form.department,
+        unit: form.unit, category: form.category, priority: form.priority,
+        region: form.region, station: form.station,
+        expected_completion_date: form.expected_completion_date,
+        purpose: form.purpose, problem_statement: form.problem_statement,
+        expected_outcome: form.expected_outcome, quantity: form.quantity,
+        unit_of_measure: form.unit_of_measure, technology: form.technology,
+        specification: form.specification, cost_basis: form.cost_basis,
+        funding_source: form.funding_source,
+      };
+      if (form.estimated_cost) body.estimated_cost = parseFloat(form.estimated_cost);
+      const res = await proposals.create(body);
+      if (action === 'submit') await proposals.submit(res.proposal.id, 'Submitted via proposal creation form');
+      router.push(`/proposals/${res.proposal.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create proposal');
       setSubmitting(false);
     }
   };
 
-  const canProceed = () => {
-    if (step === 1) return !!(form.title && form.department && form.category);
-    if (step === 2) return !!(form.purpose && form.problem_statement);
-    return true;
-  };
+  const reviewRows = [
+    ['Proposal Title', form.title],
+    ['Department', form.department],
+    ['Unit', form.unit],
+    ['Category', form.category],
+    ['Priority', form.priority],
+    ['Region', form.region],
+    ['Station / Location', form.station],
+    ['Expected Completion', form.expected_completion_date],
+    ['Purpose', form.purpose],
+    ['Problem Statement', form.problem_statement],
+    ['Expected Outcome', form.expected_outcome],
+    ['Quantity', form.quantity],
+    ['Technology / Equipment', form.technology],
+    ['Estimated Cost (INR)', form.estimated_cost ? `₹ ${Number(form.estimated_cost).toLocaleString('en-IN')}` : ''],
+    ['Funding Source', form.funding_source],
+  ].filter(([, v]) => v);
 
   return (
     <AppLayout>
-      <div style={{ padding: '16px 20px', maxWidth: 800 }}>
+      <div className="gov-page" style={{ maxWidth: 860 }}>
         <SyntheticBanner />
-        <div style={{ marginTop: 14, marginBottom: 20 }}>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#1a2744', margin: 0 }}>New Proposal</h1>
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '2px 0 0' }}>Complete all steps to create a proposal</p>
-        </div>
+        <PageHeader
+          title="New Proposal"
+          subtitle="Complete the form to create a departmental proposal"
+          breadcrumbs={[{ label: 'Home', href: '/dashboard' }, { label: 'Proposals', href: '/proposals' }, { label: 'New Proposal' }]}
+        />
 
         {/* Step indicator */}
-        <div style={{ display: 'flex', marginBottom: 24, background: 'white', border: '1px solid #e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', background: 'white', border: '1px solid var(--gov-border)', borderRadius: 'var(--r-md)', overflow: 'hidden', marginBottom: 20 }}>
           {STEPS.map((s, i) => {
-            const done = step > s.num;
+            const done   = step > s.num;
             const active = step === s.num;
             return (
-              <div
+              <button
                 key={s.num}
-                style={{
-                  flex: 1,
-                  padding: '10px 6px',
-                  textAlign: 'center',
-                  background: active ? '#1a2744' : done ? '#f0fdf4' : '#f8f9fa',
-                  borderRight: i < STEPS.length - 1 ? '1px solid #e5e7eb' : 'none',
-                  cursor: done ? 'pointer' : 'default',
-                }}
                 onClick={() => done && setStep(s.num)}
+                style={{
+                  flex: 1, padding: '10px 6px', border: 'none', borderRight: i < STEPS.length - 1 ? '1px solid var(--gov-border)' : 'none',
+                  background: active ? 'var(--gov-navy)' : done ? '#EEF6F1' : '#F8FAFD',
+                  cursor: done ? 'pointer' : 'default',
+                  fontFamily: 'var(--font-body)',
+                }}
               >
-                <div style={{ fontSize: 11, fontWeight: 700, color: active ? 'white' : done ? '#16a34a' : '#9ca3af' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: active ? 'white' : done ? 'var(--gov-success)' : 'var(--gov-muted)', marginBottom: 2 }}>
                   {done ? <Check size={12} style={{ display: 'inline' }} /> : s.num}
                 </div>
-                <div style={{ fontSize: 10, color: active ? 'rgba(255,255,255,0.8)' : done ? '#15803d' : '#9ca3af', marginTop: 2 }}>
-                  {s.label}
+                <div style={{ fontSize: '0.65rem', color: active ? 'rgba(255,255,255,0.85)' : done ? '#1a7a3c' : 'var(--gov-muted)', lineHeight: 1.2 }}>
+                  {s.label.replace(/^\d+\. /, '')}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
-        {/* Form content */}
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 4, padding: 20 }}>
-          {/* Step 1 */}
+        {/* Form body */}
+        <div style={{ background: 'white', border: '1px solid var(--gov-border)', borderRadius: 'var(--r-md)', padding: 24 }}>
+
           {step === 1 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Basic Information</h3>
-              <Field label="Proposal Title" required note="Use a clear, descriptive title that identifies the requirement">
-                <input style={inp} value={form.title} onChange={set('title')} placeholder="e.g. CCTV Expansion — North Station" />
-              </Field>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <Field label="Department" required>
-                  <input style={inp} value={form.department} onChange={set('department')} placeholder="e.g. Technical Wing" />
+            <FormSection num="1" title="Proposal Identification">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
+                <Field label="Proposal Title" required hint="Use a concise, descriptive title that clearly identifies the requirement.">
+                  <input className="gov-input" value={form.title} onChange={set('title')} placeholder="e.g. CCTV Modernisation — Grand Bazaar Police Station" />
                 </Field>
-                <Field label="Unit">
-                  <input style={inp} value={form.unit} onChange={set('unit')} placeholder="e.g. Surveillance" />
-                </Field>
-                <Field label="Category" required>
-                  <select style={sel} value={form.category} onChange={set('category')}>
-                    {CATEGORIES.map((c) => <option key={c} value={c} style={{ textTransform: 'capitalize' }}>{c}</option>)}
-                  </select>
-                </Field>
-                <Field label="Priority">
-                  <select style={sel} value={form.priority} onChange={set('priority')}>
-                    {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </Field>
-                <Field label="Region">
-                  <select style={sel} value={form.region} onChange={set('region')}>
-                    {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </Field>
-                <Field label="Police Station / Location">
-                  <input style={inp} value={form.station} onChange={set('station')} placeholder="e.g. Puducherry Central Station" />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <Field label="Department" required>
+                    <input className="gov-input" value={form.department} onChange={set('department')} placeholder="e.g. Technical Wing" />
+                  </Field>
+                  <Field label="Unit">
+                    <input className="gov-input" value={form.unit} onChange={set('unit')} placeholder="e.g. Surveillance Unit" />
+                  </Field>
+                  <Field label="Category" required>
+                    <select className="gov-select" value={form.category} onChange={set('category')}>
+                      {CATEGORIES.map(c => <option key={c} value={c} style={{ textTransform: 'capitalize' }}>{c}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Priority">
+                    <select className="gov-select" value={form.priority} onChange={set('priority')}>
+                      {['LOW', 'NORMAL', 'HIGH', 'URGENT'].map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Region">
+                    <select className="gov-select" value={form.region} onChange={set('region')}>
+                      {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Police Station / Location">
+                    <input className="gov-input" value={form.station} onChange={set('station')} placeholder="e.g. Grand Bazaar Police Station" />
+                  </Field>
+                </div>
+                <Field label="Expected Completion Date">
+                  <input type="date" className="gov-input" value={form.expected_completion_date} onChange={set('expected_completion_date')} />
                 </Field>
               </div>
-              <Field label="Expected Completion Date">
-                <input type="date" style={inp} value={form.expected_completion_date} onChange={set('expected_completion_date')} />
-              </Field>
-            </div>
+            </FormSection>
           )}
 
-          {/* Step 2 */}
           {step === 2 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Requirement Details</h3>
-              <Field label="Purpose / Objective" required note="What operational objective will this proposal achieve?">
-                <textarea style={textarea} value={form.purpose} onChange={set('purpose')} placeholder="Describe the operational objective..." />
+            <FormSection num="2" title="Requirement">
+              <Field label="Purpose / Objective" required hint="What operational objective will this proposal achieve?">
+                <textarea className="gov-textarea" value={form.purpose} onChange={set('purpose')} placeholder="Describe the operational objective clearly..." />
               </Field>
-              <Field label="Problem Statement" required note="Describe the operational gap or problem this proposal addresses">
-                <textarea style={textarea} value={form.problem_statement} onChange={set('problem_statement')} placeholder="Describe the current problem or gap..." />
+              <Field label="Problem Statement" required hint="Describe the operational gap, problem or deficiency this proposal addresses.">
+                <textarea className="gov-textarea" value={form.problem_statement} onChange={set('problem_statement')} placeholder="Describe the current problem or deficiency..." />
               </Field>
-              <Field label="Expected Outcome" note="Describe measurable outcomes and success criteria">
-                <textarea style={textarea} value={form.expected_outcome} onChange={set('expected_outcome')} placeholder="Describe expected benefits and outcomes..." />
+              <Field label="Expected Outcome" hint="Describe measurable outcomes and success criteria.">
+                <textarea className="gov-textarea" value={form.expected_outcome} onChange={set('expected_outcome')} placeholder="Describe expected benefits and measurable outcomes..." />
               </Field>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <Field label="Quantity">
-                  <input style={inp} value={form.quantity} onChange={set('quantity')} placeholder="e.g. 10 units" />
+                  <input className="gov-input" value={form.quantity} onChange={set('quantity')} placeholder="e.g. 10" />
                 </Field>
                 <Field label="Unit of Measure">
-                  <input style={inp} value={form.unit_of_measure} onChange={set('unit_of_measure')} placeholder="e.g. cameras, handsets, workshops" />
+                  <input className="gov-input" value={form.unit_of_measure} onChange={set('unit_of_measure')} placeholder="e.g. cameras, handsets, workshops" />
                 </Field>
               </div>
-            </div>
+            </FormSection>
           )}
 
-          {/* Step 3 */}
           {step === 3 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Budget Information</h3>
-              <Field label="Estimated Cost (INR)" note="Provide your best estimate with basis. PRISM-PY will compare against historical records.">
-                <input type="number" style={inp} value={form.estimated_cost} onChange={set('estimated_cost')} placeholder="e.g. 450000" />
+            <FormSection num="3" title="Technical Specification">
+              <Field label="Technology / Equipment / System" hint="Specify the technology category. This is used for specification intelligence and GeM search.">
+                <input className="gov-input" value={form.technology} onChange={set('technology')} placeholder="e.g. IP CCTV cameras, Digital handheld radios, Body-worn cameras" />
               </Field>
-              <Field label="Cost Basis" note="How was this estimate derived?">
-                <textarea style={{ ...textarea, minHeight: 60 }} value={form.cost_basis} onChange={set('cost_basis')} placeholder="e.g. Based on quotations from previous similar procurement..." />
+              <Field label="Technical Requirements" hint="Minimum technical specifications. Do not specify a particular brand — use technical parameters only.">
+                <textarea className="gov-textarea" style={{ minHeight: 120 }} value={form.specification} onChange={set('specification')} placeholder="e.g. Minimum 4MP IP cameras; H.265 compression; 30m IR range; ONVIF compliant; PoE enabled; 30-day NVR retention..." />
               </Field>
-              <Field label="Funding Source">
-                <input style={inp} value={form.funding_source} onChange={set('funding_source')} placeholder="e.g. State Police Budget 2024-25, MHA Grant" />
-              </Field>
-            </div>
+            </FormSection>
           )}
 
-          {/* Step 4 */}
           {step === 4 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Technical Requirements</h3>
-              <Field label="Technology / Equipment Type" note="Specify the technology category for specification intelligence and GeM search">
-                <input style={inp} value={form.technology} onChange={set('technology')} placeholder="e.g. IP CCTV cameras, Digital handheld radios, Body-worn cameras" />
+            <FormSection num="4" title="Justification">
+              <Field label="Operational Need" hint="Why is this required from an operational standpoint?">
+                <textarea className="gov-textarea" value={form.operational_need} onChange={set('operational_need')} placeholder="Describe the operational need..." />
               </Field>
-              <Field label="Technical Specification" note="Minimum technical requirements. Avoid specifying a brand — specify technical parameters only.">
-                <textarea style={{ ...textarea, minHeight: 120 }} value={form.specification} onChange={set('specification')} placeholder="e.g. 4MP IP camera; H.265; 30m IR range; ONVIF compliant; PoE; 30-day NVR retention..." />
+              <Field label="Expected Benefit" hint="What measurable improvement will this deliver?">
+                <textarea className="gov-textarea" value={form.expected_benefit} onChange={set('expected_benefit')} placeholder="Describe expected operational benefits..." />
               </Field>
-            </div>
+            </FormSection>
           )}
 
-          {/* Step 5 */}
           {step === 5 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Supporting Documents</h3>
-              <div style={{ padding: 20, background: '#f8f9fa', border: '1px dashed #d1d5db', borderRadius: 4, textAlign: 'center' }}>
-                <p style={{ fontSize: 13, color: '#6b7280' }}>
+            <FormSection num="5" title="Financial Information">
+              <Field label="Indicative / Estimated Cost (INR)" hint="Provide your best estimate. PRISM-PY will compare against historical records.">
+                <input type="number" className="gov-input" value={form.estimated_cost} onChange={set('estimated_cost')} placeholder="e.g. 450000" />
+              </Field>
+              <Field label="Cost Basis" hint="How was this estimate derived?">
+                <textarea className="gov-textarea" style={{ minHeight: 60 }} value={form.cost_basis} onChange={set('cost_basis')} placeholder="e.g. Based on quotations obtained from previous similar procurement in 2023-24..." />
+              </Field>
+              <Field label="Funding Source / Budget Head">
+                <input className="gov-input" value={form.funding_source} onChange={set('funding_source')} placeholder="e.g. State Police Budget 2025-26, MHA Modernisation Grant" />
+              </Field>
+            </FormSection>
+          )}
+
+          {step === 6 && (
+            <FormSection num="6" title="Supporting Documents">
+              <div style={{ padding: 20, background: '#F8FAFD', border: '1px dashed var(--gov-border)', borderRadius: 'var(--r-md)', textAlign: 'center' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--gov-text-sec)', marginBottom: 6 }}>
                   Document upload is available after the proposal is saved.
                 </p>
-                <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 6 }}>
-                  Supported formats: PDF, DOCX, XLSX, PPTX, TXT (max 25 MB each)
+                <p style={{ fontSize: '0.78rem', color: 'var(--gov-muted)' }}>
+                  Supported formats: PDF, DOCX, XLSX, PPTX, TXT (maximum 25 MB per file)
                 </p>
-                <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--gov-muted)', marginTop: 6 }}>
                   Proceed to save the proposal, then upload documents from the proposal detail page.
                 </p>
               </div>
-            </div>
+            </FormSection>
           )}
 
-          {/* Step 6 — Review */}
-          {step === 6 && (
-            <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: '#1a2744', marginBottom: 16 }}>Review & Submit</h3>
-              <div style={{ background: '#f8f9fa', border: '1px solid #e5e7eb', borderRadius: 3, padding: 14, marginBottom: 16 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+          {step === 7 && (
+            <FormSection num="7" title="Review & Submit">
+              <div style={{ background: '#F8FAFD', border: '1px solid var(--gov-border)', borderRadius: 'var(--r-md)', padding: 16, marginBottom: 18 }}>
+                <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gov-navy)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Proposal Summary
+                </h4>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                   <tbody>
-                    {[
-                      ['Title', form.title],
-                      ['Department', form.department],
-                      ['Category', form.category],
-                      ['Priority', form.priority],
-                      ['Region', form.region],
-                      ['Station', form.station],
-                      ['Purpose', form.purpose],
-                      ['Problem Statement', form.problem_statement],
-                      ['Quantity', form.quantity],
-                      ['Estimated Cost', form.estimated_cost ? `INR ${Number(form.estimated_cost).toLocaleString('en-IN')}` : '—'],
-                      ['Technology', form.technology],
-                    ].map(([label, value]) => (
-                      <tr key={label}>
-                        <td style={{ padding: '4px 8px', fontWeight: 600, color: '#374151', width: 160, verticalAlign: 'top' }}>{label}</td>
-                        <td style={{ padding: '4px 8px', color: value ? '#1a2744' : '#9ca3af' }}>{value || '—'}</td>
+                    {reviewRows.map(([label, value]) => (
+                      <tr key={label} style={{ borderBottom: '1px solid var(--gov-border)' }}>
+                        <td style={{ padding: '5px 8px', fontWeight: 600, color: 'var(--gov-text-sec)', width: 200, verticalAlign: 'top' }}>{label}</td>
+                        <td style={{ padding: '5px 8px', color: 'var(--gov-text)' }}>{value}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+
               {error && (
-                <div style={{ display: 'flex', gap: 8, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 3, marginBottom: 14 }}>
-                  <AlertCircle size={14} color="#dc2626" />
-                  <span style={{ fontSize: 12, color: '#b91c1c' }}>{error}</span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '10px 12px', background: 'var(--gov-danger-bg)', border: '1px solid #f5c6c2', borderRadius: 'var(--r-md)', marginBottom: 14, fontSize: '0.8rem', color: 'var(--gov-danger)' }}>
+                  <AlertCircle size={14} />
+                  {error}
                 </div>
               )}
+
               <div style={{ display: 'flex', gap: 10 }}>
-                <button
-                  onClick={() => handleSubmit('draft')}
-                  disabled={submitting}
-                  style={{ padding: '8px 16px', border: '1px solid #d1d5db', borderRadius: 3, background: 'white', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
-                >
+                <button onClick={() => handleAction('draft')} disabled={submitting} className="btn btn-secondary">
                   {submitting ? 'Saving...' : 'Save as Draft'}
                 </button>
-                <button
-                  onClick={() => handleSubmit('submit')}
-                  disabled={submitting || !form.title}
-                  style={{ padding: '8px 16px', border: 'none', borderRadius: 3, background: '#1a2744', color: 'white', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
-                >
+                <button onClick={() => handleAction('submit')} disabled={submitting || !form.title} className="btn btn-primary">
                   {submitting ? 'Submitting...' : 'Save & Submit for Review'}
                 </button>
               </div>
-            </div>
+            </FormSection>
           )}
         </div>
 
         {/* Navigation */}
-        {step !== 6 && (
+        {step < 7 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 14 }}>
             <button
-              onClick={() => setStep((s) => (s > 1 ? (s - 1) as Step : s))}
+              onClick={() => setStep(s => (s > 1 ? (s - 1) as Step : s))}
               disabled={step === 1}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: '1px solid #d1d5db', borderRadius: 3, background: 'white', cursor: step === 1 ? 'not-allowed' : 'pointer', fontSize: 12, color: step === 1 ? '#9ca3af' : '#374151' }}
+              className="btn btn-secondary"
             >
               <ChevronLeft size={14} /> Previous
             </button>
             <button
-              onClick={() => setStep((s) => (s < 6 ? (s + 1) as Step : s))}
-              disabled={!canProceed()}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: 'none', borderRadius: 3, background: canProceed() ? '#1a2744' : '#9ca3af', color: 'white', cursor: canProceed() ? 'pointer' : 'not-allowed', fontSize: 12, fontWeight: 600 }}
+              onClick={() => setStep(s => (s < 7 ? (s + 1) as Step : s))}
+              disabled={!canNext()}
+              className="btn btn-primary"
             >
               Next <ChevronRight size={14} />
             </button>

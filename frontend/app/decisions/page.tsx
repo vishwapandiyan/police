@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AppLayout from '@/components/layout/AppLayout';
+import PageHeader from '@/components/ui/PageHeader';
+import GovCard from '@/components/ui/GovCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import StatusBadge from '@/components/ui/StatusBadge';
 import SyntheticBanner from '@/components/ui/SyntheticBanner';
@@ -11,43 +13,43 @@ import type { Proposal } from '@/lib/types';
 export default function DecisionsPage() {
   const [list, setList] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    proposals.list({ limit: '200' }).then((r) => {
-      setList(r.proposals.filter((p) => ['SUBMITTED_FOR_REVIEW', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'RESUBMITTED'].includes(p.status)));
+    proposals.list({ limit: '200' }).then(r => {
+      setList(r.proposals.filter(p => ['SUBMITTED_FOR_REVIEW','UNDER_REVIEW','APPROVED','REJECTED','RESUBMITTED'].includes(p.status)));
     }).finally(() => setLoading(false));
   }, []);
-
-  const fmt = (d?: string) => d ? new Date(d).toLocaleDateString('en-IN') : '—';
+  const fmt = (d?: string) => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
   return (
     <AppLayout>
-      <div style={{ padding: '16px 20px' }}>
+      <div className="gov-page">
         <SyntheticBanner />
-        <h1 style={{ fontSize: 16, fontWeight: 700, color: '#1a2744', margin: '14px 0' }}>Decision Briefs</h1>
-        <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14 }}>Proposals requiring or having decisions</p>
+        <PageHeader
+          title="Decision Briefs"
+          subtitle="Proposals requiring or having officer decisions"
+          breadcrumbs={[{ label: 'Home', href: '/dashboard' }, { label: 'Decisions' }]}
+        />
         {loading && <LoadingSpinner />}
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: 4 }}>
+        <GovCard noPadding>
           <table className="gov-table">
-            <thead><tr><th>Proposal No.</th><th>Title</th><th>Status</th><th>Priority</th><th>Department</th><th>Submitted</th><th>Actions</th></tr></thead>
+            <thead><tr><th>#</th><th>Proposal No.</th><th>Title</th><th>Status</th><th>Priority</th><th>Department</th><th>Submitted</th><th>Action</th></tr></thead>
             <tbody>
-              {list.map((p) => (
+              {list.map((p, i) => (
                 <tr key={p.id}>
-                  <td><span style={{ fontFamily: 'monospace', fontSize: 11, color: '#6b7280' }}>{p.proposal_number}</span></td>
-                  <td><Link href={`/proposals/${p.id}`} style={{ color: '#1a2744', textDecoration: 'none', fontSize: 12 }}>{p.title.slice(0, 55)}</Link></td>
+                  <td style={{ fontSize: '0.72rem', color: 'var(--gov-muted)' }}>{i + 1}</td>
+                  <td><Link href={`/proposals/${p.id}`} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--gov-blue)', fontWeight: 600 }}>{p.proposal_number}</Link></td>
+                  <td><Link href={`/proposals/${p.id}`} style={{ color: 'var(--gov-text)', fontWeight: 500, fontSize: '0.8rem' }}>{p.title.slice(0, 55)}</Link></td>
                   <td><StatusBadge status={p.status} size="xs" /></td>
                   <td><StatusBadge status={p.priority} size="xs" /></td>
-                  <td style={{ fontSize: 11, color: '#6b7280' }}>{p.department || '—'}</td>
-                  <td style={{ fontSize: 11, color: '#9ca3af' }}>{fmt(p.submitted_at)}</td>
-                  <td>
-                    <Link href={`/proposals/${p.id}`} style={{ fontSize: 11, color: '#1d4ed8', textDecoration: 'none' }}>Review</Link>
-                  </td>
+                  <td style={{ fontSize: '0.78rem', color: 'var(--gov-text-sec)' }}>{p.department || '—'}</td>
+                  <td style={{ fontSize: '0.72rem', color: 'var(--gov-muted)', whiteSpace: 'nowrap' }}>{fmt(p.submitted_at)}</td>
+                  <td><Link href={`/proposals/${p.id}`} className="btn btn-sm btn-secondary" style={{ fontSize: '0.72rem' }}>Review</Link></td>
                 </tr>
               ))}
-              {!loading && list.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: 20, color: '#9ca3af', fontSize: 12 }}>No proposals pending decision</td></tr>}
+              {!loading && list.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: 20, color: 'var(--gov-muted)', fontSize: '0.82rem' }}>No proposals pending decision.</td></tr>}
             </tbody>
           </table>
-        </div>
+        </GovCard>
       </div>
     </AppLayout>
   );

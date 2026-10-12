@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import SyntheticBanner from '@/components/ui/SyntheticBanner';
+import PageHeader from '@/components/ui/PageHeader';
+import GovCard from '@/components/ui/GovCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import ErrorMessage from '@/components/ui/ErrorMessage';
 import { search as searchApi } from '@/lib/api';
 import type { Precedent } from '@/lib/types';
 
@@ -12,91 +13,106 @@ export default function PrecedentsPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Precedent[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
 
   const doSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    setLoading(true); setError(''); setSearched(true);
-    try {
-      const r = await searchApi.precedents(query, 10);
-      setResults(r.precedents);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed');
-    }
+    setLoading(true); setSearched(true);
+    try { const r = await searchApi.precedents(query, 10); setResults(r.precedents); }
+    catch { setResults([]); }
     setLoading(false);
   };
 
   return (
     <AppLayout>
-      <div style={{ padding: '16px 20px', maxWidth: 900 }}>
+      <div className="gov-page">
         <SyntheticBanner />
-        <div style={{ margin: '14px 0' }}>
-          <h1 style={{ fontSize: 16, fontWeight: 700, color: '#1a2744', margin: 0 }}>Precedent Search</h1>
-          <p style={{ fontSize: 12, color: '#6b7280', margin: '2px 0 0' }}>Search historical proposals for relevant precedents</p>
-        </div>
-        <form onSubmit={doSearch} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="e.g. CCTV surveillance expansion, radio handset replacement, cybercrime training..."
-            style={{ flex: 1, padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: 3, fontSize: 13, outline: 'none' }}
-          />
-          <button type="submit" disabled={!query.trim()} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: '#1a2744', color: 'white', border: 'none', borderRadius: 3, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <Search size={14} /> Search
-          </button>
-        </form>
+        <PageHeader
+          title="Precedent Search"
+          subtitle="Search historical proposals from the synthetic demo corpus for relevant precedents"
+          breadcrumbs={[{ label: 'Home', href: '/dashboard' }, { label: 'Precedents' }]}
+        />
 
-        {loading && <LoadingSpinner text="Searching precedents..." />}
-        {error && <ErrorMessage message={error} />}
+        <GovCard title="Search Historical Proposals" style={{ marginBottom: 16 }}>
+          <form onSubmit={doSearch} style={{ display: 'flex', gap: 10 }}>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--gov-muted)' }} />
+              <input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="e.g. CCTV surveillance expansion, radio handset replacement, cybercrime training..."
+                className="gov-input"
+                style={{ paddingLeft: 32 }}
+                aria-label="Search query"
+              />
+            </div>
+            <button type="submit" disabled={!query.trim()} className="btn btn-primary">
+              <Search size={14} /> Search
+            </button>
+          </form>
+          <p style={{ fontSize: '0.72rem', color: 'var(--gov-muted)', marginTop: 8 }}>
+            Example queries: CCTV surveillance, digital radio, patrol vehicle, training programme, cybercrime lab
+          </p>
+        </GovCard>
+
+        {loading && <LoadingSpinner text="Retrieving relevant precedents..." />}
 
         {searched && !loading && (
-          <>
-            <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 14 }}>
-              {results?.length || 0} precedents found from the synthetic demo corpus
-            </p>
-            {results?.map((p) => (
-              <div key={p.id} style={{ marginBottom: 14, padding: 14, background: 'white', border: '1px solid #e5e7eb', borderRadius: 4 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#1a2744' }}>Rank {p.rank}</span>
-                      <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#6b7280', background: '#f1f5f9', padding: '1px 6px', borderRadius: 2 }}>{p.proposal_id}</span>
-                      <span style={{ fontSize: 11, background: '#eff6ff', color: '#1d4ed8', padding: '2px 6px', borderRadius: 2 }}>{p.jurisdiction_label}</span>
-                      {p.document_type && <span style={{ fontSize: 10, color: '#6b7280', background: '#f1f5f9', padding: '1px 5px', borderRadius: 2 }}>{p.document_type}</span>}
-                    </div>
-                    <p style={{ fontSize: 12, color: '#374151', margin: '0 0 8px', lineHeight: 1.5 }}>{p.excerpt}</p>
-                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                      {Object.entries(p.why_match).map(([k, v]) => (
-                        <span key={k} style={{ fontSize: 10, padding: '2px 7px', borderRadius: 2, background: v === 'Strong match' ? '#f0fdf4' : '#f8f9fa', color: v === 'Strong match' ? '#15803d' : '#6b7280', border: `1px solid ${v === 'Strong match' ? '#bbf7d0' : '#e5e7eb'}` }}>
-                          <strong>{k}:</strong> {v}
+          <GovCard title={`Results — ${results?.length || 0} precedents found`} noPadding>
+            {(!results || results.length === 0) ? (
+              <div style={{ padding: '32px', textAlign: 'center', color: 'var(--gov-muted)' }}>
+                <div style={{ fontSize: '0.9rem', marginBottom: 6 }}>No precedents found for this query.</div>
+                <div style={{ fontSize: '0.78rem' }}>Try using different keywords or broader terms.</div>
+              </div>
+            ) : (
+              <table className="gov-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Proposal ID</th>
+                    <th>Relevance</th>
+                    <th>Jurisdiction</th>
+                    <th>Why This Matches</th>
+                    <th>Excerpt</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map(p => (
+                    <tr key={p.id}>
+                      <td style={{ fontSize: '0.72rem', color: 'var(--gov-muted)' }}>{p.rank}</td>
+                      <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--gov-blue)', fontWeight: 600 }}>{p.proposal_id}</td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--gov-navy)' }}>{Math.round(p.match_score * 100)}%</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span style={{ background: 'var(--gov-info-bg)', color: 'var(--gov-info)', padding: '2px 7px', borderRadius: 'var(--r-sm)', fontSize: '0.68rem', fontWeight: 600 }}>
+                          {p.jurisdiction_label}
                         </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 16 }}>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: '#1d4ed8' }}>{Math.round(p.match_score * 100)}%</div>
-                    <div style={{ fontSize: 10, color: '#9ca3af' }}>relevance</div>
-                  </div>
-                </div>
-                <div style={{ marginTop: 8, fontSize: 10, color: '#f59e0b', background: '#fffbeb', padding: '2px 8px', borderRadius: 2, display: 'inline-block' }}>SYNTHETIC DEMO DATA</div>
-              </div>
-            ))}
-            {results?.length === 0 && (
-              <div style={{ padding: 24, background: 'white', border: '1px solid #e5e7eb', borderRadius: 4, textAlign: 'center', color: '#9ca3af', fontSize: 12 }}>
-                No precedents found for this query in the demo corpus.
-              </div>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', maxWidth: 240 }}>
+                          {Object.entries(p.why_match).map(([k, v]) => (
+                            <span key={k} style={{ fontSize: '0.65rem', padding: '1px 6px', background: v === 'Strong match' ? 'var(--gov-success-bg)' : '#F0F3F8', color: v === 'Strong match' ? 'var(--gov-success)' : 'var(--gov-text-sec)', border: `1px solid ${v === 'Strong match' ? '#b7dfc7' : 'var(--gov-border)'}`, borderRadius: 'var(--r-sm)' }}>
+                              <strong>{k}:</strong> {v}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ fontSize: '0.75rem', color: 'var(--gov-text-sec)', maxWidth: 220 }}>
+                        {p.excerpt?.slice(0, 130)}{p.excerpt?.length > 130 ? '…' : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-          </>
-        )}
-
-        {!searched && (
-          <div style={{ padding: '30px 20px', background: 'white', border: '1px solid #e5e7eb', borderRadius: 4, textAlign: 'center' }}>
-            <Search size={32} color="#d1d5db" style={{ marginBottom: 10 }} />
-            <p style={{ fontSize: 13, color: '#6b7280' }}>Enter a query above to search the synthetic demo corpus for relevant historical proposals.</p>
-            <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 6 }}>Example queries: CCTV surveillance, digital radio, training programme, patrol vehicle</p>
-          </div>
+            <div style={{ padding: '8px 14px', borderTop: '1px solid var(--gov-border)', fontSize: '0.68rem', color: 'var(--gov-muted)' }}>
+              SYNTHETIC DEMO DATA — Results from the demo corpus only. Not real government records.
+            </div>
+          </GovCard>
         )}
       </div>
     </AppLayout>
