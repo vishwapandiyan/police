@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
@@ -38,17 +39,40 @@ from .intelligence import (
     specification_intelligence,
 )
 from .models import DecisionBriefRecord, Document, ProcessingStatus, ProposalAnalysis, Requirement
+from .models_v1 import (  # ensure v1 tables are created
+    AuditEvent, DecisionAction, GeMReference, GeMSearch, ImplementationRecord,
+    ImplementationUpdate, LessonRecord, OutcomeRecord, PoliceStation,
+    Proposal, ProposalDNARecord, ProposalDocument, Session as UserSession, User,
+    ProcessingJob,
+)
 from .retrieval import answer_from_sources, demo_index_ready, demo_manifest, search_demo_index
 from .seed import seed_reference_data
+from .seed_v1 import seed_proposals_v1
+from .auth_v1 import seed_demo_users
+from .routes_v1 import router as v1_router
 from .services import analyze_proposal, generate_brief, list_documents, save_requirement, save_upload
 from .settings import SYNTHETIC_LABEL, UPLOAD_DIR, VENDOR_NOTICE, get_settings
 
 logger = logging.getLogger("prism.backend")
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logging.basicConfig(level=get_settings().log_level)
+    Base.metadata.create_all(engine)
+    with session_scope() as db:
+        seed_reference_data(db)
+        seed_demo_users(db)
+        seed_proposals_v1(db)
+    logger.info("PRISM-PY API %s ready (sqlite=%s)", __version__, get_settings().sqlite_url)
+    yield
+
+
 app = FastAPI(
     title="PRISM-PY API",
     version=__version__,
     description="Police proposal intelligence backend. Synthetic demo corpus; no vendor award.",
+    lifespan=lifespan,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -57,20 +81,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.on_event("startup")
-def _startup() -> None:
-    logging.basicConfig(level=get_settings().log_level)
-    Base.metadata.create_all(engine)
-    with session_scope() as db:
-        seed_reference_data(db)
-    logger.info("PRISM-PY API %s ready (sqlite=%s)", __version__, get_settings().sqlite_url)
+# Mount v1 routes
+app.include_router(v1_router)
 
 
 @app.exception_handler(Exception)
 async def _unhandled(_request, exc: Exception):
     logger.exception("Unhandled error: %s", exc)
-    return JSONResponse(status_code=500, content={"success": False, "error": str(exc)})
+    return JSONResponse(status_code=500, content={"success": False, "error": "Internal server error"})
 
 
 def _fail(status_code: int, error: str) -> JSONResponse:
