@@ -1,7 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FilePlus, ChevronRight, Search, BookOpen, ShoppingCart, Package, FileBarChart, Clock } from 'lucide-react';
+import {
+  FilePlus, ChevronRight, Search, BookOpen, ShoppingCart, Package,
+  FileBarChart, Clock, FileText, FileEdit, CheckCircle2, Zap, Award,
+  TrendingUp, ArrowUpRight, Sparkles
+} from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import StatusBadge from '@/components/ui/StatusBadge';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -103,21 +107,236 @@ export default function DashboardPage() {
         {stats && (
           <>
             {/* KPI Strip */}
-            <div className="kpi-strip" style={{ marginBottom: 20 }}>
+            {/* Humanized KPI Cards Cockpit */}
+            <div className="kpi-strip" style={{ marginBottom: 22 }}>
               {[
-                { label: 'Total Proposals', value: stats.kpis.total_proposals, href: '/proposals', sub: '+12% from last month', cls: '' },
-                { label: 'Draft', value: stats.kpis.draft, href: '/proposals?status=DRAFT', sub: 'In preparation', cls: 'kpi-orange' },
-                { label: 'Pending Review', value: stats.kpis.submitted + stats.kpis.under_review, href: '/proposals?status=SUBMITTED_FOR_REVIEW', sub: 'Requires attention', cls: 'kpi-orange' },
-                { label: 'Approved', value: stats.kpis.approved, href: '/proposals?status=APPROVED', sub: '+3 this month', cls: 'kpi-green' },
-                { label: 'In Implementation', value: stats.kpis.in_implementation, href: '/implementation', sub: 'Across departments', cls: 'kpi-teal' },
-                { label: 'Outcomes Recorded', value: stats.kpis.total_outcomes, href: '/outcomes', sub: 'Lessons learned', cls: 'kpi-blue' },
-              ].map(kpi => (
-                <Link key={kpi.label} href={kpi.href} className={`kpi-card ${kpi.cls}`}>
-                  <div className="kpi-value">{kpi.value}</div>
-                  <div className="kpi-label">{kpi.label}</div>
-                  {kpi.sub && <div className="kpi-sub">{kpi.sub}</div>}
-                </Link>
-              ))}
+                {
+                  label: 'Total Proposals',
+                  value: stats.kpis.total_proposals,
+                  href: '/proposals',
+                  sub: '+12% this month',
+                  badgeIcon: <TrendingUp size={11} />,
+                  icon: FileText,
+                  accent: '#1e3a8a',
+                  glow: 'rgba(30, 58, 138, 0.1)',
+                  podBg: 'rgba(30, 58, 138, 0.08)',
+                  chipBg: '#eff6ff',
+                  chipColor: '#1d4ed8',
+                  chipBorder: 'rgba(59, 130, 246, 0.25)',
+                },
+                {
+                  label: 'Draft',
+                  value: stats.kpis.draft,
+                  href: '/proposals?status=DRAFT',
+                  sub: 'In preparation',
+                  badgeIcon: null,
+                  icon: FileEdit,
+                  accent: '#d97706',
+                  glow: 'rgba(217, 119, 6, 0.1)',
+                  podBg: 'rgba(217, 119, 6, 0.09)',
+                  chipBg: '#fffbeb',
+                  chipColor: '#b45309',
+                  chipBorder: 'rgba(245, 158, 11, 0.25)',
+                },
+                {
+                  label: 'Pending Review',
+                  value: stats.kpis.submitted + stats.kpis.under_review,
+                  href: '/proposals?status=SUBMITTED_FOR_REVIEW',
+                  sub: 'Requires attention',
+                  badgeIcon: <Clock size={10} />,
+                  icon: Clock,
+                  accent: '#ea580c',
+                  glow: 'rgba(234, 88, 12, 0.1)',
+                  podBg: 'rgba(234, 88, 12, 0.09)',
+                  chipBg: '#fff7ed',
+                  chipColor: '#c2410c',
+                  chipBorder: 'rgba(249, 115, 22, 0.25)',
+                },
+                {
+                  label: 'Approved',
+                  value: stats.kpis.approved,
+                  href: '/proposals?status=APPROVED',
+                  sub: '+3 this month',
+                  badgeIcon: <CheckCircle2 size={10} />,
+                  icon: CheckCircle2,
+                  accent: '#059669',
+                  glow: 'rgba(5, 150, 105, 0.1)',
+                  podBg: 'rgba(5, 150, 105, 0.09)',
+                  chipBg: '#ecfdf5',
+                  chipColor: '#047857',
+                  chipBorder: 'rgba(16, 185, 129, 0.25)',
+                },
+                {
+                  label: 'In Implementation',
+                  value: stats.kpis.in_implementation,
+                  href: '/implementation',
+                  sub: 'Across departments',
+                  badgeIcon: <Zap size={10} />,
+                  icon: Zap,
+                  accent: '#0891b2',
+                  glow: 'rgba(8, 145, 178, 0.1)',
+                  podBg: 'rgba(8, 145, 178, 0.09)',
+                  chipBg: '#ecfeff',
+                  chipColor: '#0e7490',
+                  chipBorder: 'rgba(6, 182, 212, 0.25)',
+                },
+                {
+                  label: 'Outcomes Recorded',
+                  value: stats.kpis.total_outcomes,
+                  href: '/outcomes',
+                  sub: 'Lessons learned',
+                  badgeIcon: <Award size={10} />,
+                  icon: Award,
+                  accent: '#4f46e5',
+                  glow: 'rgba(79, 70, 229, 0.1)',
+                  podBg: 'rgba(79, 70, 229, 0.09)',
+                  chipBg: '#eef2ff',
+                  chipColor: '#4338ca',
+                  chipBorder: 'rgba(99, 102, 241, 0.25)',
+                },
+              ].map(kpi => {
+                const IconComponent = kpi.icon;
+                return (
+                  <Link
+                    key={kpi.label}
+                    href={kpi.href}
+                    className="humanized-kpi-card"
+                    style={{
+                      position: 'relative',
+                      background: 'linear-gradient(165deg, #ffffff 0%, #fbfcfe 60%, #f8fafc 100%)',
+                      borderRadius: 18,
+                      border: '1px solid rgba(226, 232, 240, 0.95)',
+                      padding: '16px 15px 14px 15px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 16px -4px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03)',
+                      overflow: 'hidden',
+                      transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
+                  >
+                    {/* Top ambient glow */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: -16,
+                        right: -16,
+                        width: 80,
+                        height: 80,
+                        borderRadius: '50%',
+                        background: kpi.glow,
+                        filter: 'blur(16px)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+
+                    {/* Top sculpted accent indicator arc */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 18,
+                        right: 18,
+                        height: 3,
+                        borderRadius: '0 0 4px 4px',
+                        background: kpi.accent,
+                        opacity: 0.9,
+                      }}
+                    />
+
+                    {/* Top row: Tactile Icon Pod + Interactive Hover Arrow */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                      <div
+                        className="kpi-icon-pod"
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 11,
+                          background: kpi.podBg,
+                          color: kpi.accent,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: `0 2px 6px -1px ${kpi.glow}`,
+                          transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                        }}
+                      >
+                        <IconComponent size={18} strokeWidth={2.2} />
+                      </div>
+
+                      <div
+                        className="kpi-arrow-pill"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 24,
+                          height: 24,
+                          borderRadius: 9999,
+                          background: 'rgba(241, 245, 249, 0.7)',
+                          color: kpi.accent,
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        <ArrowUpRight size={13} strokeWidth={2.4} />
+                      </div>
+                    </div>
+
+                    {/* Metric Value & Label */}
+                    <div>
+                      <div
+                        style={{
+                          fontSize: '2.1rem',
+                          fontWeight: 800,
+                          color: kpi.accent,
+                          lineHeight: 1,
+                          letterSpacing: '-0.03em',
+                          fontFeatureSettings: '"tnum"',
+                        }}
+                      >
+                        {kpi.value}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          color: '#334155',
+                          marginTop: 6,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.04em',
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {kpi.label}
+                      </div>
+                    </div>
+
+                    {/* Humanized Subtitle Status Chip */}
+                    <div style={{ marginTop: 12, paddingTop: 9, borderTop: '1px solid rgba(241, 245, 249, 0.9)' }}>
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          fontSize: '0.66rem',
+                          fontWeight: 650,
+                          color: kpi.chipColor,
+                          background: kpi.chipBg,
+                          border: `1px solid ${kpi.chipBorder}`,
+                          padding: '2px 8px',
+                          borderRadius: 9999,
+                          lineHeight: 1.25,
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {kpi.badgeIcon}
+                        {kpi.sub}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Main 2-col grid */}

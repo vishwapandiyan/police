@@ -384,38 +384,162 @@ a:hover { text-decoration: underline; }
 }
 
 /* ================================================================
-   KPI STRIP
+   KEYFRAME ANIMATIONS & HUMANIZED MICRO-INTERACTIONS
    ================================================================ */
-.kpi-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
-@media (max-width: 1200px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.45);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(217, 119, 6, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
+  }
+}
+
+/* ================================================================
+   KPI STRIP & HUMANIZED CONTAINERS
+   ================================================================ */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+@media (max-width: 1380px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px)  { .kpi-strip { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px)  { .kpi-strip { grid-template-columns: 1fr; } }
 
 .kpi-card {
-  background: var(--gov-surface);
-  border: 1px solid var(--gov-border);
-  border-radius: var(--r-md);
-  padding: 14px 16px;
-  border-top: 3px solid var(--gov-navy);
+  position: relative;
+  background: linear-gradient(165deg, #ffffff 0%, #fcfdfe 60%, #f8fafc 100%);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 18px;
+  padding: 16px 16px 14px 16px;
   text-decoration: none;
-  display: block;
-  transition: box-shadow 0.1s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.05), 0 2px 5px -1px rgba(15, 23, 42, 0.03);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+  cursor: pointer;
 }
-.kpi-card:hover { box-shadow: var(--shadow-sm); text-decoration: none; }
-.kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--gov-navy); line-height: 1; }
-.kpi-label { font-size: 0.72rem; font-weight: 600; color: var(--gov-text-sec); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
-.kpi-sub   { font-size: 0.68rem; color: var(--gov-muted); margin-top: 2px; }
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: var(--gov-navy);
+  opacity: 0.85;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px -6px rgba(15, 34, 64, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+  border-color: rgba(15, 34, 64, 0.25);
+  text-decoration: none;
+}
 
-/* Accent colors for specific KPIs */
-.kpi-orange { border-top-color: #d97706; }
+/* Dedicated humanized KPI cards for executive dashboard */
+.humanized-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -6px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  border-color: rgba(148, 163, 184, 0.6) !important;
+  text-decoration: none;
+}
+.humanized-kpi-card:hover .kpi-icon-pod {
+  transform: scale(1.08);
+}
+.humanized-kpi-card:hover .kpi-arrow-pill {
+  background: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transform: translate(1px, -1px);
+}
+.kpi-card .kpi-arrow-icon {
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.kpi-card:hover .kpi-arrow-icon {
+  opacity: 0.9;
+  transform: translate(2px, -2px);
+}
+.kpi-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--gov-navy);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin-top: 8px;
+}
+.kpi-label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #475569;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+}
+.kpi-sub {
+  font-size: 0.68rem;
+  color: var(--gov-muted);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Accent themes for KPI cards */
+.kpi-orange::before { background: #d97706; }
 .kpi-orange .kpi-value { color: #d97706; }
-.kpi-green  { border-top-color: #1a7a3c; }
-.kpi-green  .kpi-value { color: #1a7a3c; }
-.kpi-red    { border-top-color: #c0392b; }
-.kpi-red    .kpi-value { color: #c0392b; }
-.kpi-teal   { border-top-color: var(--gov-teal); }
-.kpi-teal   .kpi-value { color: var(--gov-teal); }
-.kpi-blue   { border-top-color: var(--gov-blue); }
-.kpi-blue   .kpi-value { color: var(--gov-blue); }
+.kpi-orange:hover {
+  border-color: rgba(217, 119, 6, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(217, 119, 6, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-green::before { background: #059669; }
+.kpi-green .kpi-value { color: #059669; }
+.kpi-green:hover {
+  border-color: rgba(5, 150, 105, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(5, 150, 105, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-red::before { background: #dc2626; }
+.kpi-red .kpi-value { color: #dc2626; }
+.kpi-red:hover {
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(220, 38, 38, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-teal::before { background: #0891b2; }
+.kpi-teal .kpi-value { color: #0891b2; }
+.kpi-teal:hover {
+  border-color: rgba(8, 145, 178, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(8, 145, 178, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-blue::before { background: #2563eb; }
+.kpi-blue .kpi-value { color: #2563eb; }
+.kpi-blue:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(37, 99, 235, 0.15), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
 
 /* ================================================================
    NAVIGATION
