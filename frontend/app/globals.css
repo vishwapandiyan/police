@@ -457,20 +457,12 @@ a:hover { text-decoration: underline; }
   text-decoration: none;
 }
 
-/* Dedicated humanized KPI cards for executive dashboard */
-.humanized-kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 32px -6px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+/* Clean humanized KPI cards for executive dashboard */
+.clean-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px -4px rgba(15, 23, 42, 0.09), 0 3px 6px -1px rgba(15, 23, 42, 0.03);
   border-color: rgba(148, 163, 184, 0.6) !important;
   text-decoration: none;
-}
-.humanized-kpi-card:hover .kpi-icon-pod {
-  transform: scale(1.08);
-}
-.humanized-kpi-card:hover .kpi-arrow-pill {
-  background: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  transform: translate(1px, -1px);
 }
 .kpi-card .kpi-arrow-icon {
   opacity: 0.35;
